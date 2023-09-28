@@ -3,7 +3,6 @@
 #include <random>
 #include <vector>
 
-
 template <typename T>
 void fill_martrix_with_random_numbers(std::vector<T>& matrix, std::size_t n,
 									  int min_num = 1, int max_num = 50) {
