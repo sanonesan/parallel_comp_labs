@@ -15,10 +15,10 @@ int main(int argc, char* argv[]) {
 
 	typedef double T;
 
-	std::srand((unsigned int)time(NULL));
+	// std::srand((unsigned int)time(NULL));
 
 
-	std::size_t n = 3;
+	std::size_t n = 4;
 	std::vector<T> B;  // = {2., -5., 1., -1., 3., -1., 3., -4., 2.};
 	B.reserve(n * n);
 	fill_martrix_with_random_numbers(B, n);	 //, 1, 2);
@@ -27,21 +27,22 @@ int main(int argc, char* argv[]) {
 
 	double t1, t2;
 
-	t1 = omp_get_wtime();
-
-	lu_paral_decomp(A, n);
-
-	t2 = omp_get_wtime();
-
-	std::cout << "Paral Time taken: " << t2 - t1 << "\n";
-
+	// t1 = omp_get_wtime();
+	//
+	// lu_paral_decomp(A, n);
+	//
+	// t2 = omp_get_wtime();
+	//
+	// std::cout << "Paral Time taken: " << t2 - t1 << "\n";
+	//
 
 	A = B;
 
-
+	print_matrix(A, n);
 	t1 = omp_get_wtime();
 
-	lu_seq_decomp(A, n);
+	// lu_seq_decomp(A, n);
+	block_lu_decomp(A, n);
 
 	t2 = omp_get_wtime();
 

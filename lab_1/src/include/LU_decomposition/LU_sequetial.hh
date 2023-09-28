@@ -168,7 +168,7 @@ void block_lu_decomp(std::vector<T>& matrix, std::size_t n, std::size_t b = 2) {
 		// A size is m * v
 		//
 		std::size_t m = n - ii;
-		std::size_t v = b - 1;
+		std::size_t v = b;
 
 		for (std::size_t i = ii; i < ii + std::min(m - 1, v); ++i) {
 			for (std::size_t j = i + 1; j < m; ++j) {
@@ -184,15 +184,24 @@ void block_lu_decomp(std::vector<T>& matrix, std::size_t n, std::size_t b = 2) {
 		}
 	};
 
-	std::vector<T> L22_block, identity_b_block;
+	std::vector<T> L22_block, identity_b_block, U23_block;
+
 	L22_block.resize(b * b);
+
+	U23_block.reserve(b * (n - b));
+
 	identity_b_block.resize(b * b);
 
 	for (std::size_t i = 0; i < b; ++i) {
 		for (std::size_t j = 0; j < b; ++j) {
-			identity_b_block[i * b + j] = 0. ? (i != j) : 1.;
+			if (i == j)
+				identity_b_block[i * b + j] = 1.;
+			else
+				identity_b_block[i * b + j] = 0.;
 		}
 	}
+
+	print_matrix(identity_b_block, b);
 
 	for (std::size_t i = 0; i < n - 1; i += b) {
 		algorithm_2_9(matrix, i);
@@ -206,14 +215,30 @@ void block_lu_decomp(std::vector<T>& matrix, std::size_t n, std::size_t b = 2) {
 			}
 		}
 
-		L22_block = inverse_Matrix(L22_block, b);
-
+		U23_block.resize(b * (n - b - i));
 		for (std::size_t j = i; j < i + b; ++j) {
-			for (std::size_t k = i; k < n - i - b; ++k) {
+			for (std::size_t k = i + b; k < n; ++k) {
+				U23_block[(j - i) * b + (k - i - b)] = matrix[j * n + k];
 			}
 		}
+		L22_block = inverse_Matrix(L22_block, b);
+
+		print_matrix(matrix, n);
+		for (std::size_t l = i; l < n + b; ++l) {
+			for (std::size_t j = l + b; j < n; ++j) {
+				matrix[l * n + j] = 0.;
+				for (std::size_t k = 0; k < b; ++k) {
+					matrix[l * n + j] += L22_block[(l - i) * b + k] *
+										 U23_block[k * b + (j - l - b)];
+				}
+			}
+		}
+
+
+		print_matrix(L22_block, b);
+		print_matrix(U23_block, b, n - b - i);
+		print_matrix(matrix, n);
+		break;
 	}
-
-
 	return;
 }

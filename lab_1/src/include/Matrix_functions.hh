@@ -9,11 +9,15 @@
  *   Print 1d array in Matrix form
  */
 template <typename T>
-void print_matrix(std::vector<T>& matrix, std::size_t n) {
+void print_matrix(std::vector<T>& matrix, std::size_t n, std::size_t m = 0) {
 	std::cout << "[\n";
+
+	std::size_t v = n;
+	if (m != 0) v = m;
+
 	for (std::size_t i = 0; i < n; ++i) {
-		for (std::size_t j = 0; j < n; ++j) {
-			std::cout << std::setw(15) << matrix[i * n + j] << ", ";
+		for (std::size_t j = 0; j < v; ++j) {
+			std::cout << std::setw(10) << matrix[i * n + j] << ", ";
 		}
 		std::cout << "\n";
 	}
