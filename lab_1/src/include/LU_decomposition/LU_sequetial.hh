@@ -20,3 +20,14 @@ void lu_seq_decomp(std::vector<T>& matrix, std::size_t n) {
 	}
 	return;
 }
+
+/**
+ * matrix --- матрица
+ * n --- размерность матрицы
+ * r --- блочный параметр (by default: r = 2)
+ *
+ */
+template <typename T>
+void block_lu_decomp(std::vector<T>& matrix, std::size_t n, std::size_t r = 2) {
+	return;
+}
