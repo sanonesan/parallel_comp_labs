@@ -163,12 +163,15 @@ std::vector<T> inverse_Matrix(std::vector<T>& A, std::size_t n) {
  */
 template <typename T>
 void block_lu_decomp(std::vector<T>& matrix, std::size_t n, std::size_t b = 2) {
-	auto algorithm_2_9 = [n, b](std::vector<T>& A, std::size_t ii) {
+	std::size_t step = b;
+
+	auto algorithm_2_9 = [n](std::vector<T>& A, std::size_t ii,
+							 std::size_t step) {
 		//
 		// A size is m * v
 		//
 		std::size_t m = n - ii;
-		std::size_t v = b;
+		std::size_t v = step;
 
 		for (std::size_t i = ii; i < ii + std::min(m - 1, v); ++i) {
 			for (std::size_t j = i + 1; j < m; ++j) {
@@ -184,61 +187,150 @@ void block_lu_decomp(std::vector<T>& matrix, std::size_t n, std::size_t b = 2) {
 		}
 	};
 
-	std::vector<T> L22_block, identity_b_block, U23_block;
 
-	L22_block.resize(b * b);
+	bool flag = true;
+	std::size_t sub_step = step;
 
-	U23_block.reserve(b * (n - b));
-
-	identity_b_block.resize(b * b);
-
-	for (std::size_t i = 0; i < b; ++i) {
-		for (std::size_t j = 0; j < b; ++j) {
-			if (i == j)
-				identity_b_block[i * b + j] = 1.;
-			else
-				identity_b_block[i * b + j] = 0.;
-		}
+	if (n % step != 0) {
+		flag = false;
+		sub_step += n % step;
 	}
 
-	print_matrix(identity_b_block, b);
+	std::vector<T> L22_block, identity_b_block, U23_block;
+	L22_block.reserve(sub_step * sub_step);
+	identity_b_block.reserve(sub_step * sub_step);
+	U23_block.reserve(sub_step * sub_step);
 
-	for (std::size_t i = 0; i < n - 1; i += b) {
-		algorithm_2_9(matrix, i);
 
+	std::size_t i = 0;
+	while (i < n - 1) {
+		// for (std::size_t i = 0; i <= n - 1; i += step) {
+		if (flag == false && i == 0) {
+			// std::cout << "aaaa\n";
+			step = sub_step;
+			L22_block.resize(step * step);
+			U23_block.resize(step * (n - step));
+			identity_b_block.resize(step * step);
 
-		L22_block.assign(identity_b_block.begin(), identity_b_block.end());
-		// get L22_block
-		for (std::size_t j = i + 1; j < i + b; ++j) {
-			for (std::size_t k = i; k < j; ++k) {
-				L22_block[(j - i) * b + (k - i)] = matrix[j * n + k];
+			for (std::size_t i = 0; i < step; ++i) {
+				for (std::size_t j = 0; j < step; ++j) {
+					if (i == j)
+						identity_b_block[i * step + j] = 1.;
+					else
+						identity_b_block[i * step + j] = 0.;
+				}
 			}
-		}
+		} else if (flag == false && i != 0) {
+			// std::cout << "bbbb\n";
+			flag = true;
+			step = b;
+			// std::cout << step << "\n";
+			L22_block.resize(step * step);
+			U23_block.resize(step * (n - step));
+			identity_b_block.resize(step * step);
 
-		U23_block.resize(b * (n - b - i));
-		for (std::size_t j = i; j < i + b; ++j) {
-			for (std::size_t k = i + b; k < n; ++k) {
-				U23_block[(j - i) * b + (k - i - b)] = matrix[j * n + k];
+			for (std::size_t i = 0; i < step; ++i) {
+				for (std::size_t j = 0; j < step; ++j) {
+					if (i == j)
+						identity_b_block[i * step + j] = 1.;
+					else
+						identity_b_block[i * step + j] = 0.;
+				}
 			}
-		}
-		L22_block = inverse_Matrix(L22_block, b);
+		} else if (flag == true && i == 0) {
+			// std::cout << "ccc\n";
+			step = b;
+			L22_block.resize(step * step);
+			U23_block.resize(step * (n - step));
+			identity_b_block.resize(step * step);
 
-		print_matrix(matrix, n);
-		for (std::size_t l = i; l < n + b; ++l) {
-			for (std::size_t j = l + b; j < n; ++j) {
-				matrix[l * n + j] = 0.;
-				for (std::size_t k = 0; k < b; ++k) {
-					matrix[l * n + j] += L22_block[(l - i) * b + k] *
-										 U23_block[k * b + (j - l - b)];
+			for (std::size_t i = 0; i < step; ++i) {
+				for (std::size_t j = 0; j < step; ++j) {
+					if (i == j)
+						identity_b_block[i * step + j] = 1.;
+					else
+						identity_b_block[i * step + j] = 0.;
 				}
 			}
 		}
 
+		// std::cout << i << flag << "\n";
+		// std::cout << "pass0\n";
+		algorithm_2_9(matrix, i, step);
+		if (i == n - 1) break;
+		// std::cout << "pass1\n";
+		// print_matrix(matrix, n);
+		L22_block.assign(identity_b_block.begin(), identity_b_block.end());
+		// get L22_block
+		for (std::size_t j = i + 1; j < i + step; ++j) {
+			for (std::size_t k = i; k < j; ++k) {
+				L22_block[(j - i) * step + (k - i)] = matrix[j * n + k];
+			}
+		}
 
-		print_matrix(L22_block, b);
-		print_matrix(U23_block, b, n - b - i);
-		print_matrix(matrix, n);
-		break;
+		// std::cout << "pass2\n";
+		// U23_block.resize(step * (n - step - i));
+		for (std::size_t j = i; j < i + step; ++j) {
+			for (std::size_t k = i + step; k < n; ++k) {
+				// std::cout << j << " " << k << " " << matrix[j * n + k] <<
+				// "\n";
+				// std::cout << (j - i) << " " << k - i - step << " "
+				// 		  << matrix[j * n + k] << "\n";
+				U23_block[(j - i) * (n - step - i) + (k - i - step)] =
+					matrix[j * n + k];
+				// std::cout << (j - i) * (n - step - i) + (k - i - step) <<
+				// "\n";
+			}
+		}
+		// for (auto u = 0; u < U23_block.size(); ++u)
+		// 	std::cout << U23_block[u] << "\n";
+		// print_matrix(matrix, n);
+		print_matrix(L22_block, step);
+		//
+		print_matrix(U23_block, step, n - step - i);
+		// print_matrix(matrix, n);
+
+		L22_block = inverse_Matrix(L22_block, step);
+		print_matrix(L22_block, step);
+		// std::cout << "pass4\n";
+		// print_matrix(matrix, n);
+		for (std::size_t l = i; l < i + step; ++l) {
+			for (std::size_t j = i + step; j < n; ++j) {
+				matrix[l * n + j] = 0.;
+				for (std::size_t k = 0; k < step; ++k) {
+					matrix[l * n + j] +=
+						L22_block[(l - i) * step + k] *
+						U23_block[k * (n - i - step) + (j - i - step)];
+				}
+			}
+		}
+		// std::cout << "pass5\n";
+		// print_matrix(matrix, n);
+		for (std::size_t l = i + step; l < n; ++l) {
+			for (std::size_t j = i + step; j < n; ++j) {
+				matrix[l * n + j] = 0.;
+				for (std::size_t k = 0; k < n - step - i; ++k) {
+					// std::cout << std::setw(9) << matrix[(i + b) * n + k]
+					// << " * " << matrix[(i + k) * n + j] << "\n";
+					matrix[l * n + j] +=
+						matrix[l * n + k] * matrix[(i + k) * n + j];
+				}
+			}
+		}
+		// std::cout << "pass6\n";
+
+		// print_matrix(L22_block, b);
+		// print_matrix(U23_block, b, n - b - i);
+		// print_matrix(matrix, n);
+
+		i += step;
+
+
+		// print_matrix(L22_block, b);
+		// print_matrix(U23_block, b, n - b - i);
+		// print_matrix(matrix, n);
 	}
+
+
 	return;
 }

@@ -47,6 +47,8 @@ std::vector<T> matrix_mult(std::vector<T>& A, std::vector<T>& B,
 template <typename T>
 void get_LU_matrices(std::vector<T>& matrix, std::vector<T>& L,
 					 std::vector<T>& U, std::size_t n) {
+	L.clear();
+	U.clear();
 	L.resize(n * n);
 	U.resize(n * n);
 
