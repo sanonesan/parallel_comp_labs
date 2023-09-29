@@ -103,7 +103,7 @@ void get_LU_matrices(const std::vector<T>& matrix, std::vector<T>& L,
 /**
  *
  *
- * Fing Iverse Matrix
+ * Find Iverse Matrix
  *
  * via QR decomposion
  *
