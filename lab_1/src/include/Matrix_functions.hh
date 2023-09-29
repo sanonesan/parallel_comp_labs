@@ -54,6 +54,7 @@ std::vector<T> matrix_mult(const std::vector<T>& A, const std::vector<T>& B,
 	Result.resize(n * n);
 	for (std::size_t i = 0; i < n; ++i) {
 		for (std::size_t j = 0; j < n; ++j) {
+			Result[i * n + j] = 0.;
 			for (std::size_t k = 0; k < n; ++k) {
 				Result[i * n + j] += A[i * n + k] * B[k * n + j];
 			}
