@@ -15,10 +15,9 @@ int main(int argc, char* argv[]) {
 
 	typedef double T;
 
-	// std::srand((unsigned int)time(NULL));
+	std::srand((unsigned int)time(NULL));
 
-
-	std::size_t n = 6;
+	std::size_t n = 2048;
 	std::vector<T> B;  // = {2., -5., 1., -1., 3., -1., 3., -4., 2.};
 	B.reserve(n * n);
 	fill_martrix_with_random_numbers(B, n, 50, 1);	//, 1, 2);
@@ -26,11 +25,11 @@ int main(int argc, char* argv[]) {
 	std::vector<T> A(B);
 
 	double t1, t2;
-	print_matrix(A, n);
+	// print_matrix(A, n);
 	// t1 = omp_get_wtime();
 	//
-	lu_paral_decomp(A, n);
-	print_matrix(A, n);
+	// lu_paral_decomp(A, n);
+	// print_matrix(A, n);
 
 
 	// t2 = omp_get_wtime();
@@ -40,10 +39,25 @@ int main(int argc, char* argv[]) {
 
 	A = B;
 
-	// t1 = omp_get_wtime();
+	t1 = omp_get_wtime();
 
 	lu_seq_decomp(A, n);
-	print_matrix(A, n);
+	// print_matrix(A, n);
+
+	t2 = omp_get_wtime();
+
+	// print_matrix(K, n);
+
+	std::cout << "Seq Time taken: " << t2 - t1 << "\n";
+
+
+	A = B;
+
+	t1 = omp_get_wtime();
+	block_lu_decomp(A, n, 64);
+	t2 = omp_get_wtime();
+
+	// print_matrix(A, n, n);	// t2 = omp_get_wtime();
 	//
 	// std::vector<T> L(A), U(A);
 	// get_LU_matrices(A, L, U, n);
@@ -51,16 +65,7 @@ int main(int argc, char* argv[]) {
 	// auto K = matrix_mult(L, U, n);
 	// //
 
-	// print_matrix(K, n);
-
-	A = B;
-	block_lu_decomp(A, n, 2);
-
-	print_matrix(A, n);
-
-	// t2 = omp_get_wtime();
-
-	// std::cout << "Seq Time taken: " << t2 - t1 << "\n";
+	std::cout << "Seq Time taken: " << t2 - t1 << "\n";
 
 	return 0;
 }
