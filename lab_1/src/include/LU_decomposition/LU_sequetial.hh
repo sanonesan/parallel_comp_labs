@@ -66,10 +66,16 @@ void block_lu_decomp(std::vector<T>& matrix, std::size_t n, std::size_t b = 2) {
 		sub_step += n % step;
 	}
 
-	std::vector<T> L22_block, identity_b_block, U23_block;
+	std::vector<T> L22_block, identity_b_block, lower_b_block, upper_b_block;
+	std::size_t reserve_min = 0;
+
+	reserve_min = std::max(sub_step, n - sub_step);
+
 	L22_block.reserve(sub_step * sub_step);
 	identity_b_block.reserve(sub_step * sub_step);
-	U23_block.reserve(sub_step * sub_step);
+
+	lower_b_block.reserve(reserve_min * reserve_min);
+	upper_b_block.reserve(reserve_min * reserve_min);
 
 
 	std::size_t i = 0;
@@ -77,7 +83,7 @@ void block_lu_decomp(std::vector<T>& matrix, std::size_t n, std::size_t b = 2) {
 		if (flag == false && i == 0) {
 			step = sub_step;
 			L22_block.resize(step * step);
-			U23_block.resize(step * (n - step));
+			upper_b_block.resize(step * (n - step));
 			identity_b_block.resize(step * step);
 
 			for (std::size_t i = 0; i < step; ++i) {
@@ -92,7 +98,7 @@ void block_lu_decomp(std::vector<T>& matrix, std::size_t n, std::size_t b = 2) {
 			flag = true;
 			step = b;
 			L22_block.resize(step * step);
-			U23_block.resize(step * (n - step));
+			upper_b_block.resize(step * (n - step));
 			identity_b_block.resize(step * step);
 
 			for (std::size_t i = 0; i < step; ++i) {
@@ -106,7 +112,7 @@ void block_lu_decomp(std::vector<T>& matrix, std::size_t n, std::size_t b = 2) {
 		} else if (flag == true && i == 0) {
 			step = b;
 			L22_block.resize(step * step);
-			U23_block.resize(step * (n - step));
+			upper_b_block.resize(step * (n - step));
 			identity_b_block.resize(step * step);
 
 			for (std::size_t i = 0; i < step; ++i) {
@@ -135,7 +141,7 @@ void block_lu_decomp(std::vector<T>& matrix, std::size_t n, std::size_t b = 2) {
 
 		for (std::size_t j = i; j < i + step; ++j) {
 			for (std::size_t k = i + step; k < n; ++k) {
-				U23_block[(j - i) * (n - step - i) + (k - i - step)] =
+				upper_b_block[(j - i) * (n - step - i) + (k - i - step)] =
 					matrix[j * n + k];
 			}
 		}
@@ -148,7 +154,7 @@ void block_lu_decomp(std::vector<T>& matrix, std::size_t n, std::size_t b = 2) {
 				for (std::size_t k = 0; k < step; ++k) {
 					matrix[l * n + j] +=
 						L22_block[(l - i) * step + k] *
-						U23_block[k * (n - step - i) + (j - i - step)];
+						upper_b_block[k * (n - step - i) + (j - i - step)];
 				}
 			}
 		}

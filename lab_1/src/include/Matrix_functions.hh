@@ -22,8 +22,8 @@ void check_vector_zero(std::vector<T>& vec) {
  *   Prstd::size_t 1d array in Matrix form
  */
 template <typename T>
-void prstd::size_t_matrix(const std::vector<T>& matrix, const std::size_t n,
-						  const std::size_t m = 0) {
+void print_matrix(const std::vector<T>& matrix, const std::size_t n,
+				  const std::size_t m = 0) {
 	std::cout << "[\n";
 
 	std::size_t v = n;
@@ -111,7 +111,7 @@ template <typename T>
 std::vector<T> inverse_Matrix(const std::vector<T>& A, const std::size_t n) {
 	T eps = 1e-14;
 	auto reverse_course = [n](const std::vector<T>& A, const std::vector<T>& b,
-							  std::vector<T>& solution) -> std::size_t {
+							  std::vector<T>& solution) -> int {
 		solution = b;
 		solution[n - 1] /= A[(n - 1) * n + n - 1];
 
@@ -128,7 +128,7 @@ std::vector<T> inverse_Matrix(const std::vector<T>& A, const std::size_t n) {
 	};
 
 	auto coefs = [eps, n](const std::size_t& k, const std::size_t& l, T& c,
-						  T& s, const std::vector<T>& A) -> std::size_t {
+						  T& s, const std::vector<T>& A) -> int {
 		if (k < n && l < n) {
 			T temp = sqrt(pow(A[k * n + k], 2) + pow(A[l * n + k], 2));
 
@@ -146,7 +146,7 @@ std::vector<T> inverse_Matrix(const std::vector<T>& A, const std::size_t n) {
 	auto QR_decomposion_method = [coefs, reverse_course, eps, n](
 
 									 const std::vector<T>& A, std::vector<T>& Q,
-									 std::vector<T>& R) -> std::size_t {
+									 std::vector<T>& R) -> int {
 		T c = 0., s = 0.;
 
 		Q.clear();
@@ -231,7 +231,7 @@ template <typename T>
 void multiplyBlockPart(T* a, T* b, T* c, std::size_t size) {
 	const std::size_t bs = 64;
 
-	double abl[bs * bs], bbl[bs * bs], cbl[bs * bs];
+	T abl[bs * bs], bbl[bs * bs], cbl[bs * bs];
 
 	for (std::size_t bi = 0; bi < size; bi += bs)
 		for (std::size_t bj = 0; bj < size; bj += bs) {

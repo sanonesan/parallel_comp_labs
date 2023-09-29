@@ -17,15 +17,15 @@ int main(int argc, char* argv[]) {
 
 	std::srand((unsigned int)time(NULL));
 
-	std::size_t n = 2048;
-	std::vector<T> B;  // = {2., -5., 1., -1., 3., -1., 3., -4., 2.};
+	std::size_t n = 3;
+	std::vector<T> B = {2., -5., 1., -1., 3., -1., 3., -4., 2.};
 	B.reserve(n * n);
-	fill_martrix_with_random_numbers(B, n, 50, 1);	//, 1, 2);
+	// fill_martrix_with_random_numbers(B, n, 50, 1);	//, 1, 2);
 
 	std::vector<T> A(B);
 
 	double t1, t2;
-	// print_matrix(A, n);
+	print_matrix(A, n);
 	// t1 = omp_get_wtime();
 	//
 	// lu_paral_decomp(A, n);
@@ -54,9 +54,14 @@ int main(int argc, char* argv[]) {
 	A = B;
 
 	t1 = omp_get_wtime();
-	block_lu_decomp(A, n, 64);
+	block_lu_decomp(A, n, 2);
 	t2 = omp_get_wtime();
 
+	A = B;
+	std::vector<T> C(A);
+	C.clear();
+	Strassen(&A[0], &B[0], &C[0], n);
+	print_matrix(C, n);
 	// print_matrix(A, n, n);	// t2 = omp_get_wtime();
 	//
 	// std::vector<T> L(A), U(A);
