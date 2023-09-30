@@ -2,9 +2,6 @@
 
 #include <cmath>
 #include <cstddef>
-#include <cstdio>
-#include <iterator>
-#include <utility>
 #include <vector>
 
 #include "../Matrix_functions.hh"
