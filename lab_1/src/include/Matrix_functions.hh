@@ -31,7 +31,7 @@ void print_matrix(const std::vector<T>& matrix, const std::size_t n,
 
 	for (std::size_t i = 0; i < n; ++i) {
 		for (std::size_t j = 0; j < v; ++j) {
-			std::cout << std::setw(10) << matrix[i * n + j] << ", ";
+			std::cout << std::setw(10) << matrix[i * v + j] << ", ";
 		}
 		std::cout << "\n";
 	}

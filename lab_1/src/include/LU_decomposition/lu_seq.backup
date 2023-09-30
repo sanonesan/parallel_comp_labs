@@ -36,3 +36,21 @@ void lu_seq_decomp(std::vector<T>& matrix, std::size_t n) {
 	}
 	return;
 }
+
+
+
+for (std::size_t j = i + 1; j < i + step; ++j) {
+			for (std::size_t l = 0; l < step - j; ++l) {
+				for (std::size_t k = i + step; k < n; ++k) {
+					// printf("B[%d, %d] = %f \t", j + l, k,
+					// 	   matrix[(j + l) * n + k]);
+					// printf("B[%d, %d] = %f \t ", j + l, j - 1,
+					// 	   matrix[(j + l) * n + j - 1]);
+					// printf("B[%d, %d] = %f \n", j - 1, k,
+					// 	   matrix[(j - 1) * n + k]);
+					matrix[(j + l) * n + k] -=
+						matrix[(j + l) * n + j - 1] * matrix[(j - 1) * n + k];
+				}
+			}
+		}
+
