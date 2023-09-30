@@ -1,12 +1,14 @@
 #pragma once
 
+#include <cmath>
 #include <cstddef>
 #include <iomanip>
 #include <iostream>
-#include <iterator>
 #include <vector>
 
-
+/**
+ * Help function to avoid "-0." in array
+ */
 template <typename T>
 void check_vector_zero(std::vector<T>& vec) {
 	const T _eps = 1e-14;
@@ -19,7 +21,7 @@ void check_vector_zero(std::vector<T>& vec) {
 }
 
 /**
- *   Prstd::size_t 1d array in Matrix form
+ *   1d array in Matrix form
  */
 template <typename T>
 void print_matrix(const std::vector<T>& matrix, const std::size_t n,
@@ -228,6 +230,10 @@ std::vector<T> inverse_Matrix(const std::vector<T>& A, const std::size_t n) {
 	return InvMatrix;
 }
 
+
+/**
+ * block multiplication algorithm
+ */
 template <typename T>
 void multiplyBlockPart(T* a, T* b, T* c, std::size_t size) {
 	const std::size_t bs = 64;
@@ -265,6 +271,10 @@ void multiplyBlockPart(T* a, T* b, T* c, std::size_t size) {
 		}
 }
 
+
+/**
+ * Strassen algorithm for matrix multiplication
+ */
 template <typename T>
 void Strassen(T* A, T* B, T* C, std::size_t size) {
 	std::size_t N = 512;  // Размер самого маленького блока

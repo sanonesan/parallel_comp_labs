@@ -9,6 +9,13 @@
 
 #include "../Matrix_functions.hh"
 
+/**
+ * Sequential LU decomposition for n x n matrix
+ *
+ * Variables:
+ *      matrix --- matrix size [n x n]
+ *      n --- matrix size
+ */
 template <typename T>
 void lu_seq_decomp(std::vector<T>& matrix, std::size_t n) {
 	for (std::size_t i = 0; i < n - 1; ++i) {
@@ -28,14 +35,16 @@ void lu_seq_decomp(std::vector<T>& matrix, std::size_t n) {
 
 
 /**
- * matrix --- матрица
- * n --- размерность матрицы
- * b --- блочный параметр (by default: b = 2)
+ * Sequential block LU decomposition for n x n matrix
  *
+ * Variables:
+ *      matrix --- matrix size [n x n]
+ *      n --- matrix size
+ *      b --- block param (by default: b = 32)
  */
 template <typename T>
-void block_lu_decomp(std::vector<T>& matrix, std::size_t n, std::size_t b = 2) {
-	// std::cout << "pass0\n";
+void block_lu_decomp(std::vector<T>& matrix, std::size_t n,
+					 std::size_t b = 32) {
 	std::size_t step = b;
 
 
@@ -93,7 +102,7 @@ void block_lu_decomp(std::vector<T>& matrix, std::size_t n, std::size_t b = 2) {
 	*/
 	for (std::size_t i = 0; i < n - 1; i += step) {
 		/**
-			For first iteration to with sub_step
+			Do first iteration with sub_step if needed
 		*/
 		if (flag == false && i == 0) {
 			step = sub_step;
