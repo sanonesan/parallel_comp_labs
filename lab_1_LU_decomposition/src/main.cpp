@@ -3,10 +3,10 @@
 #include <cstddef>
 #include <vector>
 
-#include "./include/LU_decomposition/LU_parallel.hh"
-#include "./include/LU_decomposition/LU_sequetial.hh"
-#include "./include/Matrix_functions.hh"
-#include "./include/Matrix_generator.hh"
+#include "./include/LU_decomposition/LU_parallel.hpp"
+#include "./include/LU_decomposition/LU_sequetial.hpp"
+#include "./include/Matrix_functions.hpp"
+#include "./include/Matrix_generator.hpp"
 
 int main(int argc, char* argv[]) {
 	typedef double T;

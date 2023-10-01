@@ -1,38 +1,59 @@
 #pragma once
 
-#include <cmath>
+#include <omp.h>
+
 #include <cstddef>
 #include <vector>
 
-#include "../Matrix_functions.hh"
+#include "../Matrix_functions.hpp"
 
 /**
- * Sequential LU decomposition for n x n matrix
+ * Help function to avoid "-0." in array
+ */
+template <typename T>
+void parallel_check_vector_zero(std::vector<T>& vec) {
+	const T _eps = 1e-14;
+#pragma omp parallel for
+	for (std::size_t i = 0; i < vec.size(); ++i) {
+		if (fabs(vec[i]) < _eps) {
+			vec[i] = 0.;
+			vec[i] *= (1 / vec[i] > 0) ? (1) : (-1);
+		}
+	}
+}
+
+/**
+ * Parallel LU decomposition for n x n matrix
+ * via OpenMP
  *
  * Variables:
  *      matrix --- matrix size [n x n]
  *      n --- matrix size
+ *      b --- chunk param (by default: b = 32)
  */
 template <typename T>
-void lu_seq_decomp(std::vector<T>& matrix, std::size_t n) {
+void paral_lu_decomp(std::vector<T>& matrix, std::size_t n) {
 	for (std::size_t i = 0; i < n - 1; ++i) {
+#pragma omp parallel for shared(matrix)
 		for (std::size_t j = i + 1; j < n; ++j) {
 			matrix[j * n + i] = matrix[j * n + i] / matrix[i * n + i];
 		}
+
+#pragma omp parallel for shared(matrix)
 		for (std::size_t j = i + 1; j < n; ++j) {
 			for (std::size_t k = i + 1; k < n; ++k) {
-				matrix[j * n + k] -= matrix[j * n + i] * matrix[i * n + k];
-				// matrix[j * n + k] - matrix[j * n + i] * matrix[i * n + k];
+				matrix[j * n + k] =
+					matrix[j * n + k] - matrix[j * n + i] * matrix[i * n + k];
 			}
 		}
 	}
-	check_vector_zero(matrix);
 	return;
 }
 
 
 /**
- * Sequential block LU decomposition for n x n matrix
+ * Parallel block LU decomposition for n x n matrix
+ * via OpenMP
  *
  * Variables:
  *      matrix --- matrix size [n x n]
@@ -40,10 +61,9 @@ void lu_seq_decomp(std::vector<T>& matrix, std::size_t n) {
  *      b --- block param (by default: b = 32)
  */
 template <typename T>
-void block_lu_decomp(std::vector<T>& matrix, std::size_t n,
-					 std::size_t b = 32) {
+void parallel_block_lu_decomp(std::vector<T>& matrix, std::size_t n,
+							  std::size_t b = 32) {
 	std::size_t step = b;
-
 
 	/**
 		Functon to get LU decomposion of matrix A (size m x v) inside
@@ -56,12 +76,13 @@ void block_lu_decomp(std::vector<T>& matrix, std::size_t n,
 							 std::size_t step) {
 		std::size_t m = n - ii;
 		std::size_t v = step;
-
 		for (std::size_t i = ii; i < ii + std::min(m - 1, v); ++i) {
+#pragma omp parallel for shared(A)
 			for (std::size_t j = i + 1; j < m + ii; ++j) {
 				A[j * n + i] /= A[i * n + i];
 			}
 			if (i - ii < v) {
+#pragma omp parallel for shared(A)
 				for (std::size_t j = i + 1; j < m + ii; ++j) {
 					for (std::size_t k = i + 1; k < v + ii; ++k) {
 						A[j * n + k] -= A[j * n + i] * A[i * n + k];
@@ -128,6 +149,7 @@ void block_lu_decomp(std::vector<T>& matrix, std::size_t n,
 				changing A23
 			)
 		*/
+#pragma omp parallel for shared(matrix)
 		for (std::size_t j = i + 1; j < i + step; ++j) {
 			for (std::size_t l = 0; l < step - j + i; ++l) {
 				for (std::size_t k = i + step; k < n; ++k) {
@@ -141,6 +163,7 @@ void block_lu_decomp(std::vector<T>& matrix, std::size_t n,
 			Find A33 = A33 - L23 * U23;
 			via fast KIJ algorithm
 		*/
+#pragma omp parallel for shared(matrix)
 		for (std::size_t k = 0; k < step; ++k) {
 			for (std::size_t l = i + step; l < n; ++l) {
 				for (std::size_t j = i + step; j < n; ++j) {
@@ -151,7 +174,7 @@ void block_lu_decomp(std::vector<T>& matrix, std::size_t n,
 		}
 	}
 
-	check_vector_zero(matrix);
+	parallel_check_vector_zero(matrix);
 
 	return;
 }
