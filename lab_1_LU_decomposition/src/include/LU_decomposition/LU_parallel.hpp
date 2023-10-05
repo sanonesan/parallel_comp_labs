@@ -29,7 +29,7 @@ void parallel_check_vector_zero(std::vector<T>& vec) {
  * Variables:
  *      matrix --- matrix size [n x n]
  *      n --- matrix size
- *      b --- chunk param (by default: b = 32)
+ *      b --- block param (by default: b = 32)
  */
 template <typename T>
 void paral_lu_decomp(std::vector<T>& matrix, std::size_t n) {
@@ -47,6 +47,7 @@ void paral_lu_decomp(std::vector<T>& matrix, std::size_t n) {
 			}
 		}
 	}
+	parallel_check_vector_zero(matrix);
 	return;
 }
 
