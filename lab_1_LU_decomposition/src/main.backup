@@ -21,9 +21,6 @@ int main(int argc, char* argv[]) {
 	fill_martrix_with_random_numbers(B, n, 50, 1);
 	std::vector<T> A(B);
 
-	std::ofstream output_file("/nethome/student/FS20/FS2-x2/Egorov/lab_1_LU_decomposition/output/output_2048.txt");
-	// std::ofstream output_file("/nethome/student/FS20/FS2-x2/Egorov/lab_1_LU_decomposition/output/output_4096.txt");
-
 	double t1, t2;
 
 	/**
@@ -32,31 +29,31 @@ int main(int argc, char* argv[]) {
 	 *
 	 */
 
-	output_file << "Sequential part: \n";
-	A = B;
-	t1 = omp_get_wtime();
-	lu_seq_decomp(A, n);
-	// print_matrix(A, n);
-	t2 = omp_get_wtime();
-	output_file << std::setw(30) << "Sequential LU_dec time: " << std::setw(9)
-			  << t2 - t1 << "\n";
-	A = B;
-	t1 = omp_get_wtime();
-	block_lu_decomp(A, n, 64);
-	// print_matrix(A, n, n);
-	t2 = omp_get_wtime();
-	output_file << std::setw(30)
-			  << "Sequetial Block LU_dec time: " << std::setw(9) << t2 - t1
-			  << "\n";
+	// A = B;
+	// t1 = omp_get_wtime();
+	// lu_seq_decomp(A, n);
+	// // print_matrix(A, n);
+	// t2 = omp_get_wtime();
+	// std::cout << std::setw(30) << "Sequential LU_dec time: " << std::setw(9)
+	// 		  << t2 - t1 << "\n";
+	//
+	// A = B;
+	// t1 = omp_get_wtime();
+	// block_lu_decomp(A, n, 64);
+	// // print_matrix(A, n, n);
+	// t2 = omp_get_wtime();
+	// std::cout << std::setw(30)
+	// 		  << "Sequetial Block LU_dec time: " << std::setw(9) << t2 - t1
+	// 		  << "\n";
+	//
 	/**
 	 *
 	 * Parallel algorithms section
 	 *
 	 */
 
-	output_file << "\nParallel part: \n";
-	std::vector<std::size_t> threads_vec = {1, 2, 4, 6, 8, 12, 16, 18};
-
+	std::vector<std::size_t> threads_vec = {2, 4, 6, 8, 12, 16, 18};
+	std::ofstream output_file("../output/output.txt");
 
 	std::size_t num_threads = 1;
 	for (auto thr = threads_vec.begin(); thr != threads_vec.end(); ++thr) {

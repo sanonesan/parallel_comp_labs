@@ -1,0 +1,29 @@
+Sequential part: 
+      Sequential LU_dec time:   22.3648
+ Sequetial Block LU_dec time:   22.8036
+
+Parallel part: 
+num_threads = 1
+           Paral LU_dec time:   22.3384
+  Parallel Block LU_dec time:   22.8367
+num_threads = 2
+           Paral LU_dec time:   12.0656
+  Parallel Block LU_dec time:   15.7034
+num_threads = 4
+           Paral LU_dec time:   6.94252
+  Parallel Block LU_dec time:   7.08359
+num_threads = 6
+           Paral LU_dec time:   5.54865
+  Parallel Block LU_dec time:   4.58917
+num_threads = 8
+           Paral LU_dec time:   4.94404
+  Parallel Block LU_dec time:   3.42509
+num_threads = 12
+           Paral LU_dec time:   4.29196
+  Parallel Block LU_dec time:   2.63445
+num_threads = 16
+           Paral LU_dec time:   3.96759
+  Parallel Block LU_dec time:   1.85142
+num_threads = 18
+           Paral LU_dec time:   3.91393
+  Parallel Block LU_dec time:    1.8342
