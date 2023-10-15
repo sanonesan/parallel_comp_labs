@@ -1,0 +1,17 @@
+Sequential part: 
+      Sequential LU_dec time:  0.188447
+ Sequetial Block LU_dec time:  0.173179
+
+Parallel part: 
+num_threads = 1
+        Parallel LU_dec time:  0.177004
+  Parallel Block LU_dec time:  0.245495
+num_threads = 2
+        Parallel LU_dec time: 0.0949102
+  Parallel Block LU_dec time:  0.135914
+num_threads = 3
+        Parallel LU_dec time: 0.0544555
+  Parallel Block LU_dec time: 0.0767224
+num_threads = 6
+        Parallel LU_dec time: 0.0460438
+  Parallel Block LU_dec time: 0.0599259
