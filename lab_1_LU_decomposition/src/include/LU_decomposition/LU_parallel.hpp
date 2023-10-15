@@ -73,17 +73,17 @@ void parallel_block_lu_decomp(std::vector<T>& matrix, const std::size_t n,
 	std::size_t step = b;
 
 	/*
-				 _______ = b
-				 |[b b b * * * * * * *] |
-			  b =|[b b b * * * * * * *] |
-				 |[b b b * * * * * * *] |
-				  [* * * * * * * * * *] |
-		matrix =  [* * * * * * * * * *] | = n
-				  [* * * * * * * * * *] |
-				  [* * * * * * * * * *] |
-				  [* * * * * * * * * *] |
-				  [* * * * * * * * * *] |
-				  --------------------- = m
+			   _____ = b
+			 |[b b b * * * * * * *] |
+		     b = |[b b b * * * * * * *] |
+			 |[b b b * * * * * * *] |
+			  [* * * * * * * * * *] |
+		matrix  = [* * * * * * * * * *] | = n
+			  [* * * * * * * * * *] |
+			  [* * * * * * * * * *] |
+			  [* * * * * * * * * *] |
+			  [* * * * * * * * * *] |
+			  --------------------- = m
 		n --- matrix rows
 		m --- matrix columns
 		b --- size of block inside matrix
