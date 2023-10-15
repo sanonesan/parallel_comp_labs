@@ -91,8 +91,8 @@ void parallel_block_lu_decomp(std::vector<T>& matrix, const std::size_t n,
 	*/
 	/**
 		Functon to get LU decomposion of matrix A
-		which consistes of b_block (size [n x n]) and
-		under_b_block (size m x n)
+		which consists of b_block (size [n x n]) and
+		under_b_block (size [m x n])
 		Though matrix A is size of (m + n) x n
 	*/
 	auto get_LU_decomposition_for_b_block_and_under_b_block =
