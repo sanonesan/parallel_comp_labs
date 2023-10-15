@@ -1,3 +1,5 @@
+# Config file
+/lab_1_LU_decomposition/src/config.hpp
 # Prerequisites
 *.d
 # Compiled Object files
