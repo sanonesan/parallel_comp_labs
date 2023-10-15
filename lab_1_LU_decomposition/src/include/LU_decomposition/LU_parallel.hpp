@@ -26,12 +26,13 @@ void parallel_check_vector_zero(std::vector<T>& vec) {
 }
 
 /**
- * Parallel LU decomposition for n x n matrix
+ * Parallel LU decomposition for n x m matrix
  * via OpenMP
  *
  * Variables:
- *      matrix --- matrix size [n x n]
- *      n --- matrix size
+ *      matrix --- matrix size [n x m]
+ *      n --- matrix rows
+ *      m --- matrix columns
  */
 template <typename T>
 void paral_lu_decomp(std::vector<T>& matrix, std::size_t n, std::size_t m) {

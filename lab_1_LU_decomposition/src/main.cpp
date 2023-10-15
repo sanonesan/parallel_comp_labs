@@ -5,10 +5,12 @@
 #include <iterator>
 #include <vector>
 
+#include "./config.hpp"
 #include "./include/LU_decomposition/LU_parallel.hpp"
 #include "./include/LU_decomposition/LU_sequetial.hpp"
 #include "./include/Matrix_functions.hpp"
 #include "./include/Matrix_generator.hpp"
+
 
 int main(int argc, char* argv[]) {
 	typedef double T;
@@ -22,12 +24,8 @@ int main(int argc, char* argv[]) {
 	std::vector<T> A(B);
 
 	// std::ofstream output_file("../output/output_2048.txt");
-	// std::ofstream output_file(
-	// 	"/nethome/student/FS20/FS2-x2/Egorov/lab_1_LU_decomposition/output/"
-	// 	"output_2048.txt");
-	std::ofstream output_file(
-		"/nethome/student/FS20/FS2-x2/Egorov/lab_1_LU_decomposition/output/"
-		"output_2048.txt");
+	std::ofstream output_file(config_lab_1::PATH_output_folder +
+							  "/output_2048.txt");
 
 	double t1, t2;
 
@@ -61,7 +59,7 @@ int main(int argc, char* argv[]) {
 	 */
 
 	output_file << "\nParallel part: \n";
-	std::vector<std::size_t> threads_vec = {1, 2, 4, 6, 8, 12, 16, 18};
+	std::vector<std::size_t> threads_vec = {1, 2, 4, 6};  //, 8, 12, 16, 18};
 
 	for (auto num_threads = threads_vec.begin();
 		 num_threads != threads_vec.end(); ++num_threads) {

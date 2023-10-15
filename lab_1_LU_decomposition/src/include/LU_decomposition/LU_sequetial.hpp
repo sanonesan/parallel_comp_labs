@@ -10,7 +10,6 @@
 
 /**
  * Sequential LU decomposition for n x m matrix
- * via OpenMP
  *
  * Variables:
  *      matrix --- matrix size [n x m]
@@ -41,7 +40,6 @@ void sequential_lu_decomp(std::vector<T>& matrix, std::size_t n,
 
 /**
  * Sequential block LU decomposition for n x m matrix
- * via OpenMP
  *
  * Variables:
  *      matrix --- matrix size [n x m]
