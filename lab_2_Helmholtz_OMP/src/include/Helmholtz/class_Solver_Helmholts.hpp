@@ -6,11 +6,12 @@
 
 #include <fstream>
 #include <iomanip>
-#include <ios>
+#include <iostream>
 #include <vector>
 
-#include "./Helmholtz_sequential.hpp"
 #include "./class_Helmholtz.hpp"
+#include "./schemes/Helmholtz_parallel.hpp"
+#include "./schemes/Helmholtz_sequential.hpp"
 
 template <class T>
 class Solver_Helmoltz_eq {
@@ -98,6 +99,17 @@ class Solver_Helmoltz_eq {
 				eq._right_boundary_condition.second(eq.x1[n2 - 1], eq.x2[j]);
 		}
 
+		if (eq._solution.first == 1) {
+			eq._solution_vec.reserve(n1 * n2);
+			eq._solution_vec.resize(n1 * n2);
+			for (std::size_t i = 0; i < n2; ++i) {
+				for (std::size_t j = 0; j < n1; ++j) {
+					eq._solution_vec[i * n2 + j] =
+						eq._solution.second(eq.x1[i], eq.x2[j]);
+				}
+			}
+		}
+
 		if (this->notifications) {
 			std::cout << "  Done!\n";
 		}
@@ -107,7 +119,8 @@ class Solver_Helmoltz_eq {
 	 * Solve Helmholtz_equation sequentially
 	 * with one of included methods:
 	 * - Jacobi
-	 * - ZeidelRB
+	 * - Seidel
+	 * - Seidel_RB
 	 */
 	void solve_sequential(Helmholtz_equation<T>& helmholts_eq,
 						  const std::string method = "Jacobi") {
@@ -117,6 +130,19 @@ class Solver_Helmoltz_eq {
 
 		solve_Helmoltz_eq_sequential(helmholts_eq, this->iter, method,
 									 this->tol);
+
+		if (this->notifications) {
+			std::cout << "  Done!\n";
+		}
+	}
+
+	void solve_parallel(Helmholtz_equation<T>& helmholts_eq,
+						const std::string method = "Jacobi") {
+		if (this->notifications) {
+			std::cout << file_name << ": solving... \t";
+		}
+
+		solve_Helmoltz_eq_parallel(helmholts_eq, this->iter, method, this->tol);
 
 		if (this->notifications) {
 			std::cout << "  Done!\n";

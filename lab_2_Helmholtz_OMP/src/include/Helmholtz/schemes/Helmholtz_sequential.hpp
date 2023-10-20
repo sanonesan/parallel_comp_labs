@@ -1,34 +1,14 @@
 #pragma once
 
+#include <cmath>
 #include <cstddef>
-#include <iterator>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "../Matrix_functions.hpp"
-#include "./class_Helmholtz.hpp"
-
-template <typename T>
-T norm_difference(const std::vector<T>& A, const std::vector<T>& B,
-				  const std::size_t& rows, const std::size_t& cols,
-				  const T& eps = 1e-15) {
-	T norm = 0.;
-	T tmp = 0.;
-
-	for (std::size_t i = 0; i < rows; ++i) {
-		tmp = 0.;
-		for (std::size_t j = 0; j < cols; ++j) {
-			tmp += fabs(A[i * cols + j] - B[i * cols + j]);
-		}
-		if (norm < tmp) norm = tmp;
-	}
-	if (fabs(norm) < eps && norm != 0.) {
-		norm = 0.;
-		if (1 / norm < 0) norm *= -1;
-	}
-	return norm;
-}
+#include "../Helmholtz_config/helmholtz_cfg.hpp"
+#include "../class_Helmholtz.hpp"
+#include "../helpers/norm_difference.hpp"
 
 template <typename T>
 void Jacobi(Helmholtz_equation<T>& eq, std::size_t& iter, const T& eps = 1e-6) {
@@ -50,21 +30,22 @@ void Jacobi(Helmholtz_equation<T>& eq, std::size_t& iter, const T& eps = 1e-6) {
 					 u0[(i + 1) * n2 + j]) /
 					eq._coef;
 		++iter;
-	} while (norm_difference(u0, eq.res, n1, n2, eps) > eps);
+	} while (norm_difference(u0, eq.res, n1, n2, config_Helmholtz_eq::NORM_TYPE,
+							 eps) > eps);
 
 	return;
 }
 
 
 template <typename T>
-void Zeidel(Helmholtz_equation<T>& eq, std::size_t iter, const T& eps = 1e-6) {
+void Seidel(Helmholtz_equation<T>& eq, std::size_t iter, const T& eps = 1e-6) {
 	std::vector<T> u0(eq.res);
 	u0.shrink_to_fit();
 	iter = 1;
 	std::size_t n1 = eq.x2.size(), n2 = eq.x1.size();
 
 	/**
-	 * Main body of Zeidel method
+	 * Main body of Seidel method
 	 */
 	do {
 		if (iter > 1) eq.res.swap(u0);
@@ -76,14 +57,15 @@ void Zeidel(Helmholtz_equation<T>& eq, std::size_t iter, const T& eps = 1e-6) {
 					 eq.res[(i - 1) * n2 + j] + u0[(i + 1) * n2 + j]) /
 					eq._coef;
 		++iter;
-	} while (norm_difference(u0, eq.res, n1, n2, eps) > eps);
+	} while (norm_difference(u0, eq.res, n1, n2, config_Helmholtz_eq::NORM_TYPE,
+							 eps) > eps);
 
 	return;
 }
 
 
 template <typename T>
-void Zeidel_RB(Helmholtz_equation<T>& eq, std::size_t iter,
+void Seidel_RB(Helmholtz_equation<T>& eq, std::size_t iter,
 			   const T& eps = 1e-6) {
 	std::vector<T> u0(eq.res);
 	u0.shrink_to_fit();
@@ -91,7 +73,7 @@ void Zeidel_RB(Helmholtz_equation<T>& eq, std::size_t iter,
 	std::size_t n1 = eq.x2.size(), n2 = eq.x1.size();
 
 	/**
-	 * Main body of Zeidel_RB method
+	 * Main body of Seidel_RB method
 	 */
 	do {
 		if (iter > 1) eq.res.swap(u0);
@@ -114,7 +96,8 @@ void Zeidel_RB(Helmholtz_equation<T>& eq, std::size_t iter,
 					 eq.res[(i - 1) * n2 + j] + eq.res[(i + 1) * n2 + j]) /
 					eq._coef;
 		++iter;
-	} while (norm_difference(u0, eq.res, n1, n2, eps) > eps);
+	} while (norm_difference(u0, eq.res, n1, n2, config_Helmholtz_eq::NORM_TYPE,
+							 eps) > eps);
 
 	return;
 }
@@ -122,16 +105,16 @@ void Zeidel_RB(Helmholtz_equation<T>& eq, std::size_t iter,
 
 template <typename T>
 void solve_Helmoltz_eq_sequential(Helmholtz_equation<T>& eq, std::size_t& iter,
-								  const std::string method = "Zeidel_RB",
+								  const std::string method = "Seidel_RB",
 								  const T& eps = 1e-6) {
 	if (method == "Jacobi") {
 		Jacobi(eq, iter, eps);
 		return;
-	} else if (method == "Zeidel") {
-		Zeidel(eq, iter, eps);
+	} else if (method == "Seidel") {
+		Seidel(eq, iter, eps);
 		return;
-	} else if (method == "Zeidel_RB") {
-		return Zeidel_RB(eq, iter, eps);
+	} else if (method == "Seidel_RB") {
+		return Seidel_RB(eq, iter, eps);
 	}
 
 	return;

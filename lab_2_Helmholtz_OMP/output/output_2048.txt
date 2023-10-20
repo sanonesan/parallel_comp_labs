@@ -1,5 +1,0 @@
-      Sequential LU_dec time: 0.000346313
-      Sequential LU_dec time: 1.2644e-05
-      Sequential LU_dec time: 7.05401e-06
-
-Parallel part: 

@@ -41,6 +41,10 @@ class Helmholtz_equation {
 
 	std::function<T(const T x1, const T x2)> _f;
 
+	// solution exists = 1, not = 0
+	std::pair<std::size_t, std::function<T(const T x, const T y)>> _solution;
+	std::vector<T> _solution_vec;
+
 
 	std::vector<T> x1, x2, res;
 
@@ -62,6 +66,7 @@ class Helmholtz_equation {
 				   M_PI * M_PI * (1 - x) * x * sin(M_PI * y);
 		};
 		this->_f = f;
+
 		this->_left_boundary_condition.first = 0;
 		this->_right_boundary_condition.first = 0;
 		this->_upper_boundary_condition.first = 0;
@@ -79,6 +84,13 @@ class Helmholtz_equation {
 		this->_lower_boundary_condition.second = [](const T x, const T y) -> T {
 			return 0;
 		};
+
+
+		auto solution = [this](T x, T y) {
+			return (1 - x) * x * sin(M_PI * y);
+		};
+
+		this->_solution = {1, solution};
 	}
 
 	/*
