@@ -3,9 +3,9 @@
 /lab_1_LU_decomposition/LU_2048_batch
 /lab_1_LU_decomposition/LU_4096_batch
 
-/lab_2_Helholmtz_OMP/src/config.hpp
-/lab_2_Helholmtz_OMP/Helmholtz_001_batch
-/lab_2_Helholmtz_OMP/Helmholtz_0001_batch
+/lab_2_Helmholtz_OMP/src/config.hpp
+/lab_2_Helmholtz_OMP/Helmholtz_001_batch
+/lab_2_Helmholtz_OMP/Helmholtz_0001_batch
 # Prerequisites
 *.d
 # Compiled Object files
