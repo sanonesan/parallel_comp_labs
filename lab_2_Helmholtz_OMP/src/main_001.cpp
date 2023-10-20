@@ -20,12 +20,12 @@ int main(int argc, char* argv[]) {
 
 
 	Helmholtz_equation<T> eq;
-	eq._h = 0.1;
+	eq._h = 0.01;
 
 	std::ofstream output_file;
-	output_file.open("../output/output_h_01.csv");
-	// std::ofstream output_file(config_lab_2_OMP::PATH_output_folder +
-	// "/output_h_01.csv");
+	// output_file.open("../output/output_h_001.csv");
+	output_file.open(config_lab_2_OMP::PATH_output_folder +
+					 "/output_h_001.csv");
 
 	// Init csv header
 	output_file
@@ -41,9 +41,8 @@ int main(int argc, char* argv[]) {
 	 */
 	Solver_Helmoltz_eq<T> solver;
 	solver.tol = 1e-9;
-	solver.output_folder = "../output/solution";
-	// solver.output_folder = config_lab_2_OMP::PATH_output_folder +
-	// "/solution";
+	// solver.output_folder = "../output/solution";
+	solver.output_folder = config_lab_2_OMP::PATH_output_folder + "/solution";
 
 	solver.notifications = false;
 
@@ -122,7 +121,7 @@ int main(int argc, char* argv[]) {
 	 */
 
 	algorithm_type = "Parallel";
-	std::vector<std::size_t> threads_vec = {1, 2, 4, 6};  //, 8, 12, 16, 18};
+	std::vector<std::size_t> threads_vec = {1, 2, 4, 6, 8, 12, 16, 18};
 
 	for (auto num_threads = threads_vec.begin();
 		 num_threads != threads_vec.end(); ++num_threads) {
