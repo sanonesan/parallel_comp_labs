@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
 	 * B = j (Jacobi) / z (Seidel) / zrb (Zeidel Red-Black iterationd)
 	 */
 	Solver_Helmoltz_eq<T> solver;
-	solver.tol = 1e-9;
+	solver.tol = 1e-6;
 	// solver.output_folder = "../output/solution";
 	solver.output_folder = config_lab_2_OMP::PATH_output_folder + "/solution";
 
