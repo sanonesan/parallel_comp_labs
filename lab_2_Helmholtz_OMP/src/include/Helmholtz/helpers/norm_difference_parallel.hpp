@@ -18,14 +18,14 @@ T norm_difference_parallel(const std::vector<T>& A, const std::vector<T>& B,
 	if (norm_type == "inf") {
 		for (std::size_t i = 0; i < rows; ++i) {
 			tmp = 0.;
-#pragma omp parallel for shared(A, B, cols)
+#pragma omp parallel for reduction(+ : tmp)
 			for (std::size_t j = 0; j < cols; ++j) {
 				tmp += fabs(A[i * cols + j] - B[i * cols + j]);
 			}
 			if (norm < tmp) norm = tmp;
 		}
 	} else if (norm_type == "2") {
-#pragma omp parallel for shared(A, B, cols)
+#pragma omp parallel for reduction(+ : norm) private(tmp)
 		for (std::size_t i = 0; i < A.size(); ++i) {
 			tmp = A[i] - B[i];
 			norm += tmp * tmp;

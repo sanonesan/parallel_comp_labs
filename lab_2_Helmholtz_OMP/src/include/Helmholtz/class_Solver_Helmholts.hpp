@@ -1,5 +1,5 @@
 #pragma once
-
+#include <omp.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -68,9 +68,7 @@ class Solver_Helmoltz_eq {
 		std::size_t n1 = std::size_t(floor((eq._x1_L1 - eq._x1_0) / eq._h) + 1);
 		std::size_t n2 = std::size_t(floor((eq._x2_L2 - eq._x2_0) / eq._h) + 1);
 
-		eq.x1.reserve(n2);
 		eq.x1.resize(n2);
-		eq.x2.reserve(n1);
 		eq.x2.resize(n1);
 
 		eq.x1[0] = eq._x1_0;
@@ -98,6 +96,8 @@ class Solver_Helmoltz_eq {
 			eq.res[j * n2 + n1 - 1] =
 				eq._right_boundary_condition.second(eq.x1[n2 - 1], eq.x2[j]);
 		}
+		eq.u0.resize(eq.res.size());
+		eq.u0.assign(eq.res.begin(), eq.res.end());
 
 		if (eq._solution.first == 1) {
 			eq._solution_vec.reserve(n1 * n2);
@@ -113,7 +113,7 @@ class Solver_Helmoltz_eq {
 		if (this->notifications) {
 			std::cout << "  Done!\n";
 		}
-	}
+	};
 
 	/**
 	 * Solve Helmholtz_equation sequentially
@@ -134,7 +134,7 @@ class Solver_Helmoltz_eq {
 		if (this->notifications) {
 			std::cout << "  Done!\n";
 		}
-	}
+	};
 
 	void solve_parallel(Helmholtz_equation<T>& helmholts_eq,
 						const std::string method = "Jacobi") {
@@ -147,7 +147,7 @@ class Solver_Helmoltz_eq {
 		if (this->notifications) {
 			std::cout << "  Done!\n";
 		}
-	}
+	};
 
 
 	/**
@@ -212,5 +212,5 @@ class Solver_Helmoltz_eq {
 		if (this->notifications) {
 			std::cout << "  Done!\n";
 		}
-	}
+	};
 };

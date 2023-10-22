@@ -21,10 +21,10 @@ class Helmholtz_equation {
 	T _x2_0 = 0.;
 	T _x2_L2 = 1.;
 
-	T _h = 0.1;
-	T _h_2 = 0.01;
+	T _h = 0.01;
+	T _h_2 = 0.001;
 
-	T _k = 0.5;
+	T _k = 1000.0;
 	T _coef = 4. + _h * _h * _k * _k;
 
 
@@ -46,7 +46,7 @@ class Helmholtz_equation {
 	std::vector<T> _solution_vec;
 
 
-	std::vector<T> x1, x2, res;
+	std::vector<T> x1, x2, res, u0;
 
 	/**
 	 * Class constructor with default test Helmholtz_equation
@@ -57,8 +57,11 @@ class Helmholtz_equation {
 		this->_x2_0 = 0.;
 		this->_x2_L2 = 1.;
 
-		this->_h = 0.1;
+		this->_h = 0.01;
 		this->_h_2 = this->_h * this->_h;
+		this->_k = 1000.0;
+		this->_coef = 4. + _h * _h * _k * _k;
+
 
 		auto f = [this](T x, T y) {
 			return 2 * sin(M_PI * y) +
@@ -93,6 +96,18 @@ class Helmholtz_equation {
 		this->_solution = {1, solution};
 	}
 
+	void update_h(const T h) {
+		this->_h = h;
+		this->_h_2 = this->_h * this->_h;
+		this->_coef = 4. + this->_h_2 * this->_k * this->_k;
+		return;
+	}
+
+	void update_k(const T k) {
+		this->_k = k;
+		this->_coef = 4. + this->_h_2 * this->_k * this->_k;
+		return;
+	}
 	/*
 	 * May be realize later
 	 */

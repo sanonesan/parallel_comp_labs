@@ -20,13 +20,13 @@ int main(int argc, char* argv[]) {
 
 
 	Helmholtz_equation<T> eq;
-	eq.update_h(0.0001);
+	eq.update_h(0.0005);
 	eq.update_k(5000.0);
 
 	std::ofstream output_file;
-	// output_file.open("../output/output_h_0001.csv");
+	// output_file.open("../output/output_h_0005.csv");
 	output_file.open(config_lab_2_OMP::PATH_output_folder +
-					 "/output_h_0001.csv");
+					 "/output_h_0005.csv");
 
 	// Init csv header
 	output_file << "h_lenght,eps,algorithm_type,num_threads,method_type,n_of_"
@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
 	 * B = j (Jacobi) / z (Seidel) / zrb (Zeidel Red-Black iterationd)
 	 */
 	Solver_Helmoltz_eq<T> solver;
-	solver.tol = 1e-9;
+	solver.tol = 1e-6;
 	// solver.output_folder = "../output/solution";
 	solver.output_folder = config_lab_2_OMP::PATH_output_folder + "/solution";
 

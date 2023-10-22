@@ -20,7 +20,9 @@ int main(int argc, char* argv[]) {
 
 
 	Helmholtz_equation<T> eq;
-	eq._h = 0.01;
+	eq.update_h(0.001);
+	eq.update_k(1000.0);
+
 
 	std::ofstream output_file;
 	// output_file.open("../output/output_h_001.csv");
@@ -28,9 +30,9 @@ int main(int argc, char* argv[]) {
 					 "/output_h_001.csv");
 
 	// Init csv header
-	output_file
-		<< "h_lenght,algorithm_type,num_threads,method_type,n_of_iter,error_in_"
-		   "norm_inf,time_taken\n";
+	output_file << "h_lenght,eps,algorithm_type,num_threads,method_type,n_of_"
+				   "iter,error_in_"
+				   "norm_inf,time_taken\n";
 
 	/*
 	 * Output naming format:
@@ -52,8 +54,11 @@ int main(int argc, char* argv[]) {
 	 * Sequential algorithms section
 	 *
 	 */
+
+
 	algorithm_type = "Sequential";
 
+	std::cout << "\nStart: " << algorithm_type << "\n";
 	/*
 	 * Jacobi
 	 */
@@ -67,32 +72,32 @@ int main(int argc, char* argv[]) {
 
 	if (OUTPUT_SOLUTION) solver.output_eq(eq);
 
-	output_file << eq._h << "," << algorithm_type << "," << 1 << ","
-				<< method_type << "," << solver.iter << ","
+	output_file << eq._h << "," << solver.tol << "," << algorithm_type << ","
+				<< 1 << "," << method_type << "," << solver.iter << ","
 				<< norm_difference_parallel(eq._solution_vec, eq.res,
 											eq.x1.size(), eq.x2.size())
 				<< "," << t2 - t1 << "\n";
 
 
-	/*
-	 * Seidel
-	 */
-	solver.file_name = "s_h_eq_z_out";
-	solver.compute(eq);
-	method_type = "Seidel";
-
-	t1 = omp_get_wtime();
-	solver.solve_sequential(/*helmholts_eq=*/eq, /*method =*/method_type);
-	t2 = omp_get_wtime();
-
-	if (OUTPUT_SOLUTION) solver.output_eq(eq);
-
-	output_file << eq._h << "," << algorithm_type << "," << 1 << ","
-				<< method_type << "," << solver.iter << ","
-				<< norm_difference_parallel(eq._solution_vec, eq.res,
-											eq.x1.size(), eq.x2.size())
-				<< "," << t2 - t1 << "\n";
-
+	// /*
+	//  * Seidel
+	//  */
+	// solver.file_name = "s_h_eq_z_out";
+	// solver.compute(eq);
+	// method_type = "Seidel";
+	//
+	// t1 = omp_get_wtime();
+	// solver.solve_sequential(/*helmholts_eq=*/eq, /*method =*/method_type);
+	// t2 = omp_get_wtime();
+	//
+	// if (OUTPUT_SOLUTION) solver.output_eq(eq);
+	//
+	// output_file << eq._h << "," << solver.tol << "," << algorithm_type << ","
+	// 			<< 1 << "," << method_type << "," << solver.iter << ","
+	// 			<< norm_difference_parallel(eq._solution_vec, eq.res,
+	// 										eq.x1.size(), eq.x2.size())
+	// 			<< "," << t2 - t1 << "\n";
+	//
 
 	/*
 	 * Seidel_RB
@@ -107,12 +112,13 @@ int main(int argc, char* argv[]) {
 
 	if (OUTPUT_SOLUTION) solver.output_eq(eq);
 
-	output_file << eq._h << "," << algorithm_type << "," << 1 << ","
-				<< method_type << "," << solver.iter << ","
+	output_file << eq._h << "," << solver.tol << "," << algorithm_type << ","
+				<< 1 << "," << method_type << "," << solver.iter << ","
 				<< norm_difference_parallel(eq._solution_vec, eq.res,
 											eq.x1.size(), eq.x2.size())
 				<< "," << t2 - t1 << "\n";
 
+	std::cout << "\nFinish: " << algorithm_type << "\n";
 
 	/**
 	 *
@@ -136,36 +142,38 @@ int main(int argc, char* argv[]) {
 		method_type = "Jacobi";
 
 		t1 = omp_get_wtime();
-		solver.solve_sequential(/*helmholts_eq=*/eq, /*method =*/method_type);
+		solver.solve_parallel(/*helmholts_eq=*/eq, /*method =*/method_type);
 		t2 = omp_get_wtime();
 
 		if (OUTPUT_SOLUTION) solver.output_eq(eq);
 
-		output_file << eq._h << "," << algorithm_type << "," << *num_threads
-					<< "," << method_type << "," << solver.iter << ","
+		output_file << eq._h << "," << solver.tol << "," << algorithm_type
+					<< "," << *num_threads << "," << method_type << ","
+					<< solver.iter << ","
 					<< norm_difference_parallel(eq._solution_vec, eq.res,
 												eq.x1.size(), eq.x2.size())
 					<< "," << t2 - t1 << "\n";
 
 
-		/*
-		 * Seidel
-		 */
-		solver.file_name = "p_h_eq_z_out";
-		solver.compute(eq);
-		method_type = "Seidel";
-
-		t1 = omp_get_wtime();
-		solver.solve_sequential(/*helmholts_eq=*/eq, /*method =*/method_type);
-		t2 = omp_get_wtime();
-
-		if (OUTPUT_SOLUTION) solver.output_eq(eq);
-
-		output_file << eq._h << "," << algorithm_type << "," << *num_threads
-					<< "," << method_type << "," << solver.iter << ","
-					<< norm_difference_parallel(eq._solution_vec, eq.res,
-												eq.x1.size(), eq.x2.size())
-					<< "," << t2 - t1 << "\n";
+		// /*
+		//  * Seidel
+		//  */
+		// solver.file_name = "p_h_eq_z_out";
+		// solver.compute(eq);
+		// method_type = "Seidel";
+		//
+		// t1 = omp_get_wtime();
+		// solver.solve_parallel(/*helmholts_eq=*/eq, /*method =*/method_type);
+		// t2 = omp_get_wtime();
+		//
+		// if (OUTPUT_SOLUTION) solver.output_eq(eq);
+		//
+		// output_file << eq._h << "," << solver.tol << "," << algorithm_type
+		// 			<< "," << *num_threads << "," << method_type << ","
+		// 			<< solver.iter << ","
+		// 			<< norm_difference_parallel(eq._solution_vec, eq.res,
+		// 										eq.x1.size(), eq.x2.size())
+		// 			<< "," << t2 - t1 << "\n";
 
 		/*
 		 * Seidel_RB
@@ -175,14 +183,15 @@ int main(int argc, char* argv[]) {
 		method_type = "Seidel_RB";
 
 		t1 = omp_get_wtime();
-		solver.solve_sequential(/*helmholts_eq=*/eq, /*method =*/method_type);
+		solver.solve_parallel(/*helmholts_eq=*/eq, /*method =*/method_type);
 		t2 = omp_get_wtime();
 
 		if (OUTPUT_SOLUTION) solver.output_eq(eq);
 
 
-		output_file << eq._h << "," << algorithm_type << "," << *num_threads
-					<< "," << method_type << "," << solver.iter << ","
+		output_file << eq._h << "," << solver.tol << "," << algorithm_type
+					<< "," << *num_threads << "," << method_type << ","
+					<< solver.iter << ","
 					<< norm_difference_parallel(eq._solution_vec, eq.res,
 												eq.x1.size(), eq.x2.size())
 					<< "," << t2 - t1 << "\n";

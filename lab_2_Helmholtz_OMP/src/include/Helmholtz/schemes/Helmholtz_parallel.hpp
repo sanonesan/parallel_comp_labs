@@ -16,8 +16,6 @@
 template <typename T>
 void Jacobi_parallel(Helmholtz_equation<T>& eq, std::size_t& iter,
 					 const T& eps = 1e-6) {
-	std::vector<T> u0(eq.res);
-	u0.shrink_to_fit();
 	iter = 1;
 	std::size_t n1 = eq.x2.size(), n2 = eq.x1.size();
 
@@ -26,18 +24,18 @@ void Jacobi_parallel(Helmholtz_equation<T>& eq, std::size_t& iter,
 	 */
 	do {
 		if (iter > 1) {
-			eq.res.swap(u0);
+			eq.res.swap(eq.u0);
 		};
-#pragma omp parallel for shared(eq, u0, n1, n2)
+#pragma omp parallel for
 		for (std::size_t i = 1; i < n1 - 1; ++i)
 			for (std::size_t j = 1; j < n2 - 1; ++j)
 				eq.res[i * n2 + j] =
-					(eq._h_2 * eq._f(eq.x1[i], eq.x2[j]) + u0[i * n2 + j - 1] +
-					 u0[i * n2 + j + 1] + u0[(i - 1) * n2 + j] +
-					 u0[(i + 1) * n2 + j]) /
+					(eq._h_2 * eq._f(eq.x1[i], eq.x2[j]) +
+					 eq.u0[i * n2 + j - 1] + eq.u0[i * n2 + j + 1] +
+					 eq.u0[(i - 1) * n2 + j] + eq.u0[(i + 1) * n2 + j]) /
 					eq._coef;
 		++iter;
-	} while (norm_difference_parallel(u0, eq.res, n1, n2,
+	} while (norm_difference_parallel(eq.u0, eq.res, n1, n2,
 									  config_Helmholtz_eq::NORM_TYPE,
 									  eps) > eps);
 
@@ -46,10 +44,8 @@ void Jacobi_parallel(Helmholtz_equation<T>& eq, std::size_t& iter,
 
 
 template <typename T>
-void Seidel_parallel(Helmholtz_equation<T>& eq, std::size_t iter,
+void Seidel_parallel(Helmholtz_equation<T>& eq, std::size_t& iter,
 					 const T& eps = 1e-6) {
-	std::vector<T> u0(eq.res);
-	u0.shrink_to_fit();
 	iter = 1;
 	std::size_t n1 = eq.x2.size(), n2 = eq.x1.size();
 
@@ -58,18 +54,18 @@ void Seidel_parallel(Helmholtz_equation<T>& eq, std::size_t iter,
 	 */
 	do {
 		if (iter > 1) {
-			eq.res.swap(u0);
+			eq.res.swap(eq.u0);
 		};
-#pragma omp parallel for shared(eq, u0, n1, n2)
+#pragma omp parallel for
 		for (std::size_t i = 1; i < n1 - 1; ++i)
 			for (std::size_t j = 1; j < n2 - 1; ++j)
 				eq.res[i * n2 + j] =
 					(eq._h_2 * eq._f(eq.x1[i], eq.x2[j]) +
-					 eq.res[i * n2 + j - 1] + u0[i * n2 + j + 1] +
-					 eq.res[(i - 1) * n2 + j] + u0[(i + 1) * n2 + j]) /
+					 eq.res[i * n2 + j - 1] + eq.u0[i * n2 + j + 1] +
+					 eq.res[(i - 1) * n2 + j] + eq.u0[(i + 1) * n2 + j]) /
 					eq._coef;
 		++iter;
-	} while (norm_difference_parallel(u0, eq.res, n1, n2,
+	} while (norm_difference_parallel(eq.u0, eq.res, n1, n2,
 									  config_Helmholtz_eq::NORM_TYPE,
 									  eps) > eps);
 
@@ -78,10 +74,8 @@ void Seidel_parallel(Helmholtz_equation<T>& eq, std::size_t iter,
 
 
 template <typename T>
-void Seidel_RB_parallel(Helmholtz_equation<T>& eq, std::size_t iter,
+void Seidel_RB_parallel(Helmholtz_equation<T>& eq, std::size_t& iter,
 						const T& eps = 1e-6) {
-	std::vector<T> u0(eq.res);
-	u0.shrink_to_fit();
 	iter = 1;
 	std::size_t n1 = eq.x2.size(), n2 = eq.x1.size();
 
@@ -90,30 +84,34 @@ void Seidel_RB_parallel(Helmholtz_equation<T>& eq, std::size_t iter,
 	 */
 	do {
 		if (iter > 1) {
-			eq.res.swap(u0);
+			eq.res.swap(eq.u0);
 		};
 
 		// Go through REDS
-#pragma omp parallel for shared(eq, u0, n1, n2)
-		for (std::size_t i = 1; i < n1 - 1; ++i)
-			for (std::size_t j = 1 + (i - 1) % 2; j < n2 - 1; j += 2)
+#pragma omp parallel for
+		for (std::size_t i = 1; i < n1 - 1; ++i) {
+			for (std::size_t j = 1 + (i - 1) % 2; j < n2 - 1; j += 2) {
 				eq.res[i * n2 + j] =
-					(eq._h_2 * eq._f(eq.x1[i], eq.x2[j]) + u0[i * n2 + j - 1] +
-					 u0[i * n2 + j + 1] + u0[(i - 1) * n2 + j] +
-					 u0[(i + 1) * n2 + j]) /
+					(eq._h_2 * eq._f(eq.x1[i], eq.x2[j]) +
+					 eq.u0[i * n2 + j - 1] + eq.u0[i * n2 + j + 1] +
+					 eq.u0[(i - 1) * n2 + j] + eq.u0[(i + 1) * n2 + j]) /
 					eq._coef;
+			}
+		}
 
-				// Go through BLACKS
-#pragma omp parallel for shared(eq, n1, n2)
-		for (std::size_t i = 1; i < n1 - 1; ++i)
-			for (std::size_t j = 1 + i % 2; j < n2 - 1; j += 2)
+		// Go through BLACKS
+#pragma omp parallel for
+		for (std::size_t i = 1; i < n1 - 1; ++i) {
+			for (std::size_t j = 1 + i % 2; j < n2 - 1; j += 2) {
 				eq.res[i * n2 + j] =
 					(eq._h_2 * eq._f(eq.x1[i], eq.x2[j]) +
 					 eq.res[i * n2 + j - 1] + eq.res[i * n2 + j + 1] +
 					 eq.res[(i - 1) * n2 + j] + eq.res[(i + 1) * n2 + j]) /
 					eq._coef;
+			}
+		}
 		++iter;
-	} while (norm_difference_parallel(u0, eq.res, n1, n2,
+	} while (norm_difference_parallel(eq.u0, eq.res, n1, n2,
 									  config_Helmholtz_eq::NORM_TYPE,
 									  eps) > eps);
 
@@ -126,13 +124,14 @@ void solve_Helmoltz_eq_parallel(Helmholtz_equation<T>& eq, std::size_t& iter,
 								const std::string method = "Seidel_RB",
 								const T& eps = 1e-6) {
 	if (method == "Jacobi") {
-		Jacobi(eq, iter, eps);
+		Jacobi_parallel(eq, iter, eps);
 		return;
 	} else if (method == "Seidel") {
-		Seidel(eq, iter, eps);
+		Seidel_parallel(eq, iter, eps);
 		return;
 	} else if (method == "Seidel_RB") {
-		return Seidel_RB(eq, iter, eps);
+		Seidel_RB_parallel(eq, iter, eps);
+		return;
 	}
 
 	return;
