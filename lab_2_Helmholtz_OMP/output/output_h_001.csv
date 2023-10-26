@@ -1,0 +1,11 @@
+h_lenght,eps,algorithm_type,num_threads,method_type,n_of_iter,error_in_norm_inf,time_taken
+0.001,1e-06,Sequential,1,Jacobi,80,3.5125e-06,1.28687
+0.001,1e-06,Sequential,1,Seidel_RB,43,1.294e-06,0.672492
+0.001,1e-06,Parallel,1,Jacobi,80,3.5125e-06,1.30115
+0.001,1e-06,Parallel,1,Seidel_RB,43,1.294e-06,0.696337
+0.001,1e-06,Parallel,2,Jacobi,80,3.5125e-06,0.691603
+0.001,1e-06,Parallel,2,Seidel_RB,43,1.294e-06,0.364475
+0.001,1e-06,Parallel,4,Jacobi,80,3.5125e-06,0.39598
+0.001,1e-06,Parallel,4,Seidel_RB,43,1.294e-06,0.207983
+0.001,1e-06,Parallel,6,Jacobi,80,3.5125e-06,0.342675
+0.001,1e-06,Parallel,6,Seidel_RB,43,1.294e-06,0.162609
