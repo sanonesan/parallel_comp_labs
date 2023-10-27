@@ -1,0 +1,25 @@
+Parallel part:
+num_threads = 1
+        Parallel LU_dec time:   199.642
+  Parallel Block LU_dec time:    93.537
+num_threads = 2
+        Parallel LU_dec time:   107.344
+  Parallel Block LU_dec time:   46.2131
+num_threads = 4
+        Parallel LU_dec time:   67.0425
+  Parallel Block LU_dec time:   24.0472
+num_threads = 6
+        Parallel LU_dec time:   58.4217
+  Parallel Block LU_dec time:   16.2386
+num_threads = 8
+        Parallel LU_dec time:   53.8253
+  Parallel Block LU_dec time:    12.286
+num_threads = 12
+        Parallel LU_dec time:   49.5264
+  Parallel Block LU_dec time:   9.27651
+num_threads = 16
+        Parallel LU_dec time:   49.4513
+  Parallel Block LU_dec time:   7.81696
+num_threads = 18
+        Parallel LU_dec time:   50.2647
+  Parallel Block LU_dec time:   7.33872
