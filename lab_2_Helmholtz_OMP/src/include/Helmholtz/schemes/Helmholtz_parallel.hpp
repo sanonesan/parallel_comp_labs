@@ -86,7 +86,6 @@ void Seidel_RB_parallel(Helmholtz_equation<T>& eq, std::size_t& iter,
 		if (iter > 1) {
 			eq.res.swap(eq.u0);
 		};
-
 		// Go through REDS
 #pragma omp parallel for
 		for (std::size_t i = 1; i < n1 - 1; ++i) {
@@ -110,6 +109,7 @@ void Seidel_RB_parallel(Helmholtz_equation<T>& eq, std::size_t& iter,
 					eq._coef;
 			}
 		}
+
 		++iter;
 	} while (norm_difference_parallel(eq.u0, eq.res, n1, n2,
 									  config_Helmholtz_eq::NORM_TYPE,
