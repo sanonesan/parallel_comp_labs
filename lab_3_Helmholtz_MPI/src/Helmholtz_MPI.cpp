@@ -1,5 +1,4 @@
 #include <mpi.h>
-// #include <omp.h>
 
 #include <cstddef>
 #include <fstream>
@@ -64,10 +63,50 @@ int main(int argc, char** argv) {
 	/**
 	 * Jobs' section
 	 */
+	// solver.compute(eq);
+	// MPI_Barrier(MPI_COMM_WORLD);
+	// t1 = -MPI_Wtime();
+	// solver.solve_parallel_MPI(id, num_procs, eq, "Jacobi", "Send_Recv");
+	// t1 += MPI_Wtime();
+	// MPI_Barrier(MPI_COMM_WORLD);
+	// if (id == 0) {
+	// 	std::cout << t1 << std::endl;
+	// 	std::cout << norm_difference_parallel(eq._solution_vec, eq.res,
+	// 										  eq.x1.size(), eq.x2.size())
+	// 			  << std::endl;
+	// }
+	//
+	// solver.compute(eq);
+	// MPI_Barrier(MPI_COMM_WORLD);
+	// t1 = -MPI_Wtime();
+	// solver.solve_parallel_MPI(id, num_procs, eq, "Jacobi", "Sendrecv");
+	// t1 += MPI_Wtime();
+	// MPI_Barrier(MPI_COMM_WORLD);
+	// if (id == 0) {
+	// 	std::cout << t1 << std::endl;
+	// 	std::cout << norm_difference_parallel(eq._solution_vec, eq.res,
+	// 										  eq.x1.size(), eq.x2.size())
+	// 			  << std::endl;
+	// }
+	//
+	// solver.compute(eq);
+	// MPI_Barrier(MPI_COMM_WORLD);
+	// t1 = -MPI_Wtime();
+	// solver.solve_parallel_MPI(id, num_procs, eq, "Jacobi", "SendI_RecvI");
+	// t1 += MPI_Wtime();
+	// MPI_Barrier(MPI_COMM_WORLD);
+	// if (id == 0) {
+	// 	std::cout << t1 << std::endl;
+	// 	std::cout << norm_difference_parallel(eq._solution_vec, eq.res,
+	// 										  eq.x1.size(), eq.x2.size())
+	// 			  << std::endl;
+	// }
+	//
+	//
 	solver.compute(eq);
 	MPI_Barrier(MPI_COMM_WORLD);
 	t1 = -MPI_Wtime();
-	solver.solve_parallel_MPI(id, num_procs, eq, "Jacobi", "Send_Recv");
+	solver.solve_parallel_MPI(id, num_procs, eq, "Seidel_RB", "Send_Recv");
 	t1 += MPI_Wtime();
 	MPI_Barrier(MPI_COMM_WORLD);
 	if (id == 0) {
@@ -80,7 +119,7 @@ int main(int argc, char** argv) {
 	solver.compute(eq);
 	MPI_Barrier(MPI_COMM_WORLD);
 	t1 = -MPI_Wtime();
-	solver.solve_parallel_MPI(id, num_procs, eq, "Jacobi", "SendRecv");
+	solver.solve_parallel_MPI(id, num_procs, eq, "Seidel_RB", "Sendrecv");
 	t1 += MPI_Wtime();
 	MPI_Barrier(MPI_COMM_WORLD);
 	if (id == 0) {
@@ -93,7 +132,7 @@ int main(int argc, char** argv) {
 	solver.compute(eq);
 	MPI_Barrier(MPI_COMM_WORLD);
 	t1 = -MPI_Wtime();
-	solver.solve_parallel_MPI(id, num_procs, eq, "Jacobi", "SendI_RecvI");
+	solver.solve_parallel_MPI(id, num_procs, eq, "Seidel", "SendI_RecvI");
 	t1 += MPI_Wtime();
 	MPI_Barrier(MPI_COMM_WORLD);
 	if (id == 0) {

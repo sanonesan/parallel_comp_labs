@@ -10,41 +10,8 @@
 
 #include "../Helmholtz_config/helmholtz_cfg.hpp"
 #include "../class_Helmholtz.hpp"
+#include "../helpers/divide_4_regions.hpp"
 #include "../helpers/norm_difference.hpp"
-
-template <typename T>
-void divide_4_regions(Helmholtz_equation<T>& eq, int id, int num_procs,
-					  int& reg_local_size, int& local_offset,
-					  std::vector<int>& reg_sizes, std::vector<int>& offsets) {
-	/**
-	 * eq --- Helmholtz_equation
-	 * id --- processor include
-	 * num_procs --- number of processor
-	 * reg_local_size --- size of local region (after division)
-	 * local_offset --- offset of region (number of row where processor
-	 *                  takes its values)
-	 * reg_sizes --- vector of divided regions' reg_sizes
-	 * offsets --- vector of regions' offsets
-	 */
-
-	reg_sizes.resize(num_procs, 0);
-	offsets.resize(num_procs);
-
-	for (std::size_t i = 0; i < num_procs - 1; ++i) {
-		reg_sizes[i] = eq.x1.size() / num_procs;
-		offsets[i + 1] = offsets[i] + reg_sizes[i];
-	}
-	reg_sizes[num_procs - 1] =
-		eq.x1.size() / num_procs + eq.x1.size() % num_procs;
-	/**
-	 *
-	 */
-	MPI_Scatter(reg_sizes.data(), 1, MPI_INT, &reg_local_size, 1, MPI_INT, 0,
-				MPI_COMM_WORLD);
-
-	MPI_Scatter(offsets.data(), 1, MPI_INT, &local_offset, 1, MPI_INT, 0,
-				MPI_COMM_WORLD);
-};
 
 template <typename T>
 void Jacobi_MPI_Send_Recv(int id, int num_procs, Helmholtz_equation<T>& eq,
@@ -102,11 +69,10 @@ void Jacobi_MPI_Send_Recv(int id, int num_procs, Helmholtz_equation<T>& eq,
 
 		if (id != 0) {
 			for (std::size_t j = 1; j < n2 - 1; ++j) {
-				local_solution[0 * n2 + j] =
-					(eq._h_2 * eq._f(eq.x1[0 + local_offset], eq.x2[j]) +
-					 local_solution_prev[0 * n2 + j - 1] +
-					 local_solution_prev[0 * n2 + j + 1] + row_above[j] +
-					 local_solution_prev[n2 + j]) /
+				local_solution[j] =
+					(eq._h_2 * eq._f(eq.x1[local_offset], eq.x2[j]) +
+					 local_solution_prev[j - 1] + local_solution_prev[j + 1] +
+					 row_above[j] + local_solution_prev[n2 + j]) /
 					eq._coef;
 			}
 		}
@@ -146,7 +112,7 @@ void Jacobi_MPI_Send_Recv(int id, int num_procs, Helmholtz_equation<T>& eq,
 
 
 template <typename T>
-void Jacobi_MPI_SendRecv(int id, int num_procs, Helmholtz_equation<T>& eq,
+void Jacobi_MPI_Sendrecv(int id, int num_procs, Helmholtz_equation<T>& eq,
 						 std::size_t& iter, const T& eps = 1e-6) {
 	iter = 1;
 	std::size_t n1 = eq.x2.size(), n2 = eq.x1.size();
@@ -252,7 +218,6 @@ void Jacobi_MPI_SendI_RecvI(int id, int num_procs, Helmholtz_equation<T>& eq,
 	MPI_Request* recv_req_1;
 	MPI_Request* recv_req_2;
 
-
 	/**
 	 * Rows for computations for processor
 	 */
@@ -279,11 +244,6 @@ void Jacobi_MPI_SendI_RecvI(int id, int num_procs, Helmholtz_equation<T>& eq,
 
 	int send_count = (id != 0) ? n2 : 0;
 	int recv_count = (id != num_procs - 1) ? n2 : 0;
-	// int source = id ? id - 1 : num_procs - 1;
-	// int dest = (id != num_procs - 1) ? id + 1 : 0;
-	//
-	// int send_count = (id != num_procs - 1) ? n2 : 0;
-	// int recv_count = id ? n2 : 0;
 
 	MPI_Send_init(local_solution_prev.data(), send_count, MPI_DOUBLE, source,
 				  111, MPI_COMM_WORLD, send_req_1);

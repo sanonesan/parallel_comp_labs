@@ -16,8 +16,8 @@ void solve_Helmoltz_eq_parallel_MPI(
 	if (method == "Jacobi") {
 		if (communication_type == "Send_Recv") {
 			Jacobi_MPI_Send_Recv(id, num_procs, eq, iter, eps);
-		} else if (communication_type == "SendRecv") {
-			Jacobi_MPI_SendRecv(id, num_procs, eq, iter, eps);
+		} else if (communication_type == "Sendrecv") {
+			Jacobi_MPI_Sendrecv(id, num_procs, eq, iter, eps);
 		} else if (communication_type == "SendI_RecvI") {
 			Jacobi_MPI_SendI_RecvI(id, num_procs, eq, iter, eps);
 		}
@@ -25,7 +25,13 @@ void solve_Helmoltz_eq_parallel_MPI(
 
 		return;
 	} else if (method == "Seidel_RB") {
-		// Seidel_RB_Send_Recv(eq, iter, eps);
+		if (communication_type == "Send_Recv") {
+			Seidel_RB_MPI_Send_Recv(id, num_procs, eq, iter, eps);
+		} else if (communication_type == "Sendrecv") {
+			Seidel_RB_MPI_Sendrecv(id, num_procs, eq, iter, eps);
+		} else if (communication_type == "SendI_RecvI") {
+			Seidel_RB_MPI_SendI_RecvI(id, num_procs, eq, iter, eps);
+		}
 		return;
 	}
 
