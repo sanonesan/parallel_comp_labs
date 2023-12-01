@@ -132,7 +132,7 @@ int main(int argc, char** argv) {
 	solver.compute(eq);
 	MPI_Barrier(MPI_COMM_WORLD);
 	t1 = -MPI_Wtime();
-	solver.solve_parallel_MPI(id, num_procs, eq, "Seidel", "SendI_RecvI");
+	solver.solve_parallel_MPI(id, num_procs, eq, "Seidel_RB", "ISend_IRecv");
 	t1 += MPI_Wtime();
 	MPI_Barrier(MPI_COMM_WORLD);
 	if (id == 0) {

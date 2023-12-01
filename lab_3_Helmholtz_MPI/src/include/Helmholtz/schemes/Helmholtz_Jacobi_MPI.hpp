@@ -208,7 +208,7 @@ void Jacobi_MPI_Sendrecv(int id, int num_procs, Helmholtz_equation<T>& eq,
 
 
 template <typename T>
-void Jacobi_MPI_SendI_RecvI(int id, int num_procs, Helmholtz_equation<T>& eq,
+void Jacobi_MPI_ISend_IRecv(int id, int num_procs, Helmholtz_equation<T>& eq,
 							std::size_t& iter, const T& eps = 1e-6) {
 	iter = 1;
 	std::size_t n1 = eq.x2.size(), n2 = eq.x1.size();

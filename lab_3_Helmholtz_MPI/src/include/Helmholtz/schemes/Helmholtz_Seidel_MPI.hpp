@@ -99,13 +99,13 @@ void Seidel_RB_MPI_Send_Recv(int id, int num_procs, Helmholtz_equation<T>& eq,
 		}
 
 		if (num_procs > 1) {
-			MPI_Send(local_solution_prev.data() + (reg_local_size - 1) * n2,
+			MPI_Send(local_solution.data() + (reg_local_size - 1) * n2,
 					 send_count, MPI_DOUBLE, dest, 111, MPI_COMM_WORLD);
 			MPI_Recv(row_above.data(), recv_count, MPI_DOUBLE, source, 111,
 					 MPI_COMM_WORLD, MPI_STATUSES_IGNORE);
 
-			MPI_Send(local_solution_prev.data(), recv_count, MPI_DOUBLE, source,
-					 222, MPI_COMM_WORLD);
+			MPI_Send(local_solution.data(), recv_count, MPI_DOUBLE, source, 222,
+					 MPI_COMM_WORLD);
 			MPI_Recv(row_below.data(), send_count, MPI_DOUBLE, dest, 222,
 					 MPI_COMM_WORLD, MPI_STATUSES_IGNORE);
 		}
@@ -128,8 +128,8 @@ void Seidel_RB_MPI_Send_Recv(int id, int num_procs, Helmholtz_equation<T>& eq,
 			for (std::size_t j = 1; j < n2 - 1; j += 2) {
 				local_solution[j] =
 					(eq._h_2 * eq._f(eq.x1[local_offset], eq.x2[j]) +
-					 local_solution_prev[j - 1] + local_solution_prev[j + 1] +
-					 row_above[j] + local_solution_prev[n2 + j]) /
+					 local_solution[j - 1] + local_solution[j + 1] +
+					 row_above[j] + local_solution[n2 + j]) /
 					eq._coef;
 			}
 		}
@@ -142,9 +142,9 @@ void Seidel_RB_MPI_Send_Recv(int id, int num_procs, Helmholtz_equation<T>& eq,
 				local_solution[(reg_local_size - 1) * n2 + j] =
 					(eq._h_2 * eq._f(eq.x1[(reg_local_size - 1) + local_offset],
 									 eq.x2[j]) +
-					 local_solution_prev[(reg_local_size - 1) * n2 + j - 1] +
-					 local_solution_prev[(reg_local_size - 1) * n2 + j + 1] +
-					 local_solution_prev[(reg_local_size - 2) * n2 + j] +
+					 local_solution[(reg_local_size - 1) * n2 + j - 1] +
+					 local_solution[(reg_local_size - 1) * n2 + j + 1] +
+					 local_solution[(reg_local_size - 2) * n2 + j] +
 					 row_below[j]) /
 					eq._coef;
 			}
@@ -252,13 +252,13 @@ void Seidel_RB_MPI_Sendrecv(int id, int num_procs, Helmholtz_equation<T>& eq,
 			}
 		}
 
-		MPI_Sendrecv(local_solution_prev.data() + (reg_local_size - 1) * n2,
+		MPI_Sendrecv(local_solution.data() + (reg_local_size - 1) * n2,
 					 send_count, MPI_DOUBLE, dest, 111, row_above.data(),
 					 recv_count, MPI_DOUBLE, source, 111, MPI_COMM_WORLD,
 					 MPI_STATUSES_IGNORE);
 
-		MPI_Sendrecv(local_solution_prev.data(), recv_count, MPI_DOUBLE, source,
-					 222, row_below.data(), send_count, MPI_DOUBLE, dest, 222,
+		MPI_Sendrecv(local_solution.data(), recv_count, MPI_DOUBLE, source, 222,
+					 row_below.data(), send_count, MPI_DOUBLE, dest, 222,
 					 MPI_COMM_WORLD, MPI_STATUSES_IGNORE);
 
 
@@ -280,8 +280,8 @@ void Seidel_RB_MPI_Sendrecv(int id, int num_procs, Helmholtz_equation<T>& eq,
 			for (std::size_t j = 1; j < n2 - 1; j += 2) {
 				local_solution[j] =
 					(eq._h_2 * eq._f(eq.x1[local_offset], eq.x2[j]) +
-					 local_solution_prev[j - 1] + local_solution_prev[j + 1] +
-					 row_above[j] + local_solution_prev[n2 + j]) /
+					 local_solution[j - 1] + local_solution[j + 1] +
+					 row_above[j] + local_solution[n2 + j]) /
 					eq._coef;
 			}
 		}
@@ -294,9 +294,9 @@ void Seidel_RB_MPI_Sendrecv(int id, int num_procs, Helmholtz_equation<T>& eq,
 				local_solution[(reg_local_size - 1) * n2 + j] =
 					(eq._h_2 * eq._f(eq.x1[(reg_local_size - 1) + local_offset],
 									 eq.x2[j]) +
-					 local_solution_prev[(reg_local_size - 1) * n2 + j - 1] +
-					 local_solution_prev[(reg_local_size - 1) * n2 + j + 1] +
-					 local_solution_prev[(reg_local_size - 2) * n2 + j] +
+					 local_solution[(reg_local_size - 1) * n2 + j - 1] +
+					 local_solution[(reg_local_size - 1) * n2 + j + 1] +
+					 local_solution[(reg_local_size - 2) * n2 + j] +
 					 row_below[j]) /
 					eq._coef;
 			}
@@ -325,7 +325,7 @@ void Seidel_RB_MPI_Sendrecv(int id, int num_procs, Helmholtz_equation<T>& eq,
 
 
 template <typename T>
-void Seidel_RB_MPI_SendI_RecvI(int id, int num_procs, Helmholtz_equation<T>& eq,
+void Seidel_RB_MPI_ISend_IRecv(int id, int num_procs, Helmholtz_equation<T>& eq,
 							   std::size_t& iter, const T& eps = 1e-6) {
 	iter = 1;
 	std::size_t n1 = eq.x2.size(), n2 = eq.x1.size();
@@ -334,7 +334,6 @@ void Seidel_RB_MPI_SendI_RecvI(int id, int num_procs, Helmholtz_equation<T>& eq,
 	MPI_Request* send_req_2;
 	MPI_Request* recv_req_1;
 	MPI_Request* recv_req_2;
-
 
 	/**
 	 * Rows for computations for processor
@@ -480,8 +479,8 @@ void Seidel_RB_MPI_SendI_RecvI(int id, int num_procs, Helmholtz_equation<T>& eq,
 			for (std::size_t j = 1; j < n2 - 1; j += 2) {
 				local_solution[j] =
 					(eq._h_2 * eq._f(eq.x1[local_offset], eq.x2[j]) +
-					 local_solution_prev[j - 1] + local_solution_prev[j + 1] +
-					 row_above[j] + local_solution_prev[n2 + j]) /
+					 local_solution[j - 1] + local_solution[j + 1] +
+					 row_above[j] + local_solution[n2 + j]) /
 					eq._coef;
 			}
 		}
@@ -494,9 +493,9 @@ void Seidel_RB_MPI_SendI_RecvI(int id, int num_procs, Helmholtz_equation<T>& eq,
 				local_solution[(reg_local_size - 1) * n2 + j] =
 					(eq._h_2 * eq._f(eq.x1[(reg_local_size - 1) + local_offset],
 									 eq.x2[j]) +
-					 local_solution_prev[(reg_local_size - 1) * n2 + j - 1] +
-					 local_solution_prev[(reg_local_size - 1) * n2 + j + 1] +
-					 local_solution_prev[(reg_local_size - 2) * n2 + j] +
+					 local_solution[(reg_local_size - 1) * n2 + j - 1] +
+					 local_solution[(reg_local_size - 1) * n2 + j + 1] +
+					 local_solution[(reg_local_size - 2) * n2 + j] +
 					 row_below[j]) /
 					eq._coef;
 			}
