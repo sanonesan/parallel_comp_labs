@@ -53,9 +53,9 @@ int main(int argc, char** argv) {
 	if (id == 0) {
 		// output_file.open("../output/output_h_001_np_" +
 		// 				 std::to_string(num_procs) + ".csv");
-		std::ofstream output_file(config_lab_3_OMP::PATH_output_folder +
-								  "/output_h_001_nn_1_np_" +
-								  std::to_string(num_procs) + ".csv");
+		output_file.open(config_lab_3_MPI::PATH_output_folder +
+						 "/output_h_001_nn_1_np_" + std::to_string(num_procs) +
+						 ".csv");
 
 		// Init csv header
 		output_file
