@@ -1,7 +1,0 @@
-h_lenght;eps;communication_type;num_procs;method_type;n_of_iter;error_in_norm_inf;time_taken
-0.001;1e-06;Send_Recv;24;Jacobi;80;3.5125e-06;0.0791897
-0.001;1e-06;Sendrecv;24;Jacobi;80;3.5125e-06;0.0735064
-0.001;1e-06;ISend_IRecv;24;Jacobi;80;3.5125e-06;0.0729308
-0.001;1e-06;Send_Recv;24;Seidel_RB;52;1.64514e-06;0.0481587
-0.001;1e-06;Sendrecv;24;Seidel_RB;52;1.64514e-06;0.0467208
-0.001;1e-06;ISend_IRecv;24;Seidel_RB;52;1.64514e-06;0.0460906

@@ -9,7 +9,7 @@
 #include "./config.hpp"
 #include "./include/Helmholtz/class_Helmholtz.hpp"
 #include "./include/Helmholtz/class_Solver_Helmholts.hpp"
-#include "./include/Helmholtz/helpers/norm_difference_parallel.hpp"
+#include "./include/Helmholtz/helpers/norm_difference.hpp"
 
 int main(int argc, char** argv) {
 	typedef double T;
@@ -51,15 +51,15 @@ int main(int argc, char** argv) {
 	MPI_Comm_rank(MPI_COMM_WORLD, &id);
 
 	if (id == 0) {
-		// output_file.open("../output/output_h_001_np_" +
-		// 				 std::to_string(num_procs) + ".csv");
-		std::ofstream output_file(config_lab_3_OMP::PATH_output_folder +
-								  "/output_h_001_nn_1_np_" +
-								  std::to_string(num_procs) + ".csv");
+		output_file.open("../output/output_h_001_np_" +
+						 std::to_string(num_procs) + ".csv");
+		// output_file.open(config_lab_3_MPI::PATH_output_folder +
+		// 				 "/output_h_0002_np_" + std::to_string(num_procs) +
+		// 				 ".csv");
 
 		// Init csv header
 		output_file
-			<< "h_lenght;eps;num_procs;method_type;communication_type;n_of_"
+			<< "h_lenght;eps;communication_type;num_procs;method_type;n_of_"
 			   "iter;error_in_"
 			   "norm_inf;time_taken\n";
 	}
@@ -79,8 +79,8 @@ int main(int argc, char** argv) {
 		output_file << eq._h << ";" << solver.tol << ";" << communication_type
 					<< ";" << num_procs << ";" << method_type << ";"
 					<< solver.iter << ";"
-					<< norm_difference_parallel(eq._solution_vec, eq.res,
-												eq.x1.size(), eq.x2.size())
+					<< norm_difference(eq._solution_vec, eq.res, eq.x1.size(),
+									   eq.x2.size())
 					<< ";" << t1 << "\n";
 	}
 
@@ -95,8 +95,8 @@ int main(int argc, char** argv) {
 		output_file << eq._h << ";" << solver.tol << ";" << communication_type
 					<< ";" << num_procs << ";" << method_type << ";"
 					<< solver.iter << ";"
-					<< norm_difference_parallel(eq._solution_vec, eq.res,
-												eq.x1.size(), eq.x2.size())
+					<< norm_difference(eq._solution_vec, eq.res, eq.x1.size(),
+									   eq.x2.size())
 					<< ";" << t1 << "\n";
 	}
 
@@ -111,8 +111,8 @@ int main(int argc, char** argv) {
 		output_file << eq._h << ";" << solver.tol << ";" << communication_type
 					<< ";" << num_procs << ";" << method_type << ";"
 					<< solver.iter << ";"
-					<< norm_difference_parallel(eq._solution_vec, eq.res,
-												eq.x1.size(), eq.x2.size())
+					<< norm_difference(eq._solution_vec, eq.res, eq.x1.size(),
+									   eq.x2.size())
 					<< ";" << t1 << "\n";
 	}
 
@@ -127,8 +127,8 @@ int main(int argc, char** argv) {
 		output_file << eq._h << ";" << solver.tol << ";" << communication_type
 					<< ";" << num_procs << ";" << method_type << ";"
 					<< solver.iter << ";"
-					<< norm_difference_parallel(eq._solution_vec, eq.res,
-												eq.x1.size(), eq.x2.size())
+					<< norm_difference(eq._solution_vec, eq.res, eq.x1.size(),
+									   eq.x2.size())
 					<< ";" << t1 << "\n";
 	}
 
@@ -143,8 +143,8 @@ int main(int argc, char** argv) {
 		output_file << eq._h << ";" << solver.tol << ";" << communication_type
 					<< ";" << num_procs << ";" << method_type << ";"
 					<< solver.iter << ";"
-					<< norm_difference_parallel(eq._solution_vec, eq.res,
-												eq.x1.size(), eq.x2.size())
+					<< norm_difference(eq._solution_vec, eq.res, eq.x1.size(),
+									   eq.x2.size())
 					<< ";" << t1 << "\n";
 	}
 
@@ -159,9 +159,30 @@ int main(int argc, char** argv) {
 		output_file << eq._h << ";" << solver.tol << ";" << communication_type
 					<< ";" << num_procs << ";" << method_type << ";"
 					<< solver.iter << ";"
-					<< norm_difference_parallel(eq._solution_vec, eq.res,
-												eq.x1.size(), eq.x2.size())
+					<< norm_difference(eq._solution_vec, eq.res, eq.x1.size(),
+									   eq.x2.size())
 					<< ";" << t1 << "\n";
+	}
+	method_type = "Seidel_RB";
+	communication_type = "ISend_IRecv_Waitany";
+	solver.compute(eq);
+	t1 = -MPI_Wtime();
+	solver.solve_parallel_MPI(id, num_procs, eq, method_type,
+							  communication_type);
+	t1 += MPI_Wtime();
+	if (id == 0) {
+		output_file << eq._h << ";" << solver.tol << ";" << communication_type
+					<< ";" << num_procs << ";" << method_type << ";"
+					<< solver.iter << ";"
+					<< norm_difference(eq._solution_vec, eq.res, eq.x1.size(),
+									   eq.x2.size())
+					<< ";" << t1 << "\n";
+		std::cout << eq._h << ";" << solver.tol << ";" << communication_type
+				  << ";" << num_procs << ";" << method_type << ";"
+				  << solver.iter << ";"
+				  << norm_difference(eq._solution_vec, eq.res, eq.x1.size(),
+									 eq.x2.size())
+				  << ";" << t1 << "\n";
 	}
 
 	MPI_Finalize();

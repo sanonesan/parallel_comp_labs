@@ -1,0 +1,8 @@
+h_lenght;eps;communication_type;num_procs;method_type;n_of_iter;error_in_norm_inf;time_taken
+0.001;1e-06;Send_Recv;6;Jacobi;80;3.5125e-06;0.299883
+0.001;1e-06;Sendrecv;6;Jacobi;80;3.5125e-06;0.249512
+0.001;1e-06;ISend_IRecv;6;Jacobi;80;3.5125e-06;0.252708
+0.001;1e-06;Send_Recv;6;Seidel_RB;43;1.294e-06;0.147149
+0.001;1e-06;Sendrecv;6;Seidel_RB;43;1.294e-06;0.14496
+0.001;1e-06;ISend_IRecv;6;Seidel_RB;43;1.294e-06;0.140485
+0.001;1e-06;ISend_IRecv_Waitany;6;Seidel_RB;43;1.294e-06;0.324419

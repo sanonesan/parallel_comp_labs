@@ -30,6 +30,8 @@ void solve_Helmoltz_eq_parallel_MPI(
 			Seidel_RB_MPI_Sendrecv(id, num_procs, eq, iter, eps);
 		} else if (communication_type == "ISend_IRecv") {
 			Seidel_RB_MPI_ISend_IRecv(id, num_procs, eq, iter, eps);
+		} else if (communication_type == "ISend_IRecv_Waitany") {
+			Seidel_RB_MPI_ISend_IRecv_Waitany(id, num_procs, eq, iter, eps);
 		}
 		return;
 	}
