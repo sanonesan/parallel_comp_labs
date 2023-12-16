@@ -49,18 +49,18 @@ void ode_RK2_MPI(ode_system<T>& sys, std::size_t& iter, T& timer,
 	if (!path.empty() && id == 0 && !fout.is_open()) {
 		std::cout << "Could not open file for writing" << std::endl;
 	} else {
-		fout << "time;r11;r12;r13;r21;r22;r23;r31;r32;r33\n";
+		fout << "time;r11;r12;r13;r21;r22;r23;r31;r32;r33;r41;r42;r43\n";
 	}
 
 	std::size_t N_of_bodies = sys.traj_init.size();
-	std::vector<Body<T>> prev(sys.traj_init), k(N_of_bodies), tmp(N_of_bodies);
+	std::vector<Body<T>> sol(sys.traj_init), k(N_of_bodies), tmp(N_of_bodies);
 
 	std::size_t begin = offsets[id];
 	std::size_t count = counts[id];
 	std::size_t end = begin + count;
 
 
-	if (!path.empty() && id == 0) write_bodies_coords(fout, sys.t_start, prev);
+	if (!path.empty() && id == 0) write_bodies_coords(fout, sys.t_start, sol);
 
 	T t = sys.t_start + sys.tau;
 	timer = -MPI_Wtime();
@@ -70,13 +70,13 @@ void ode_RK2_MPI(ode_system<T>& sys, std::size_t& iter, T& timer,
 		tmp[i].m = sys.traj_init[i].m;
 
 	while (true) {
-		sys.N_body_func(prev, k, begin, end);
+		sys.N_body_func(sol, k, begin, end);
 		mult(k, sys.tau / 2, begin, end);
 
 		MPI_Allgatherv(MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, k.data(), counts,
 					   offsets, type, MPI_COMM_WORLD);
 
-		std::copy_n(prev.begin() + begin, count, tmp.begin() + begin);
+		std::copy_n(sol.begin() + begin, count, tmp.begin() + begin);
 
 		add(tmp, k, begin, end);
 
@@ -86,13 +86,13 @@ void ode_RK2_MPI(ode_system<T>& sys, std::size_t& iter, T& timer,
 		sys.N_body_func(tmp, k, begin, end);
 
 		mult(k, sys.tau, begin, end);
-		add(prev, k, begin, end);
+		add(sol, k, begin, end);
 
-		MPI_Allgatherv(MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, prev.data(), counts,
+		MPI_Allgatherv(MPI_IN_PLACE, 0, MPI_DATATYPE_NULL, sol.data(), counts,
 					   offsets, type, MPI_COMM_WORLD);
 
 		if (!path.empty() && id == 0) {
-			write_bodies_coords(fout, t, prev);
+			write_bodies_coords(fout, t, sol);
 		}
 
 		if (t > sys.t_final) break;

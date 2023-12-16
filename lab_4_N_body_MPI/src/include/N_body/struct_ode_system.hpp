@@ -33,7 +33,7 @@ struct ode_system {
 	ode_system<T> ode_system_default_test(const T time_step = 0.1,
 										  const T eps = 1e-6,
 										  const T G = 6.67e-11) {
-		this->name = "4Body<T>est";
+		this->name = "4Body_test";
 		/**
 		 *
 		 *
@@ -92,11 +92,13 @@ struct ode_system {
 		 */
 
 		this->t_start = 0.;
-		this->t_final = 20.;
+		this->t_final = 1.;
 		this->tau = time_step;
 		this->n_time_steps = (int)((t_final - t_start) / tau);
 		this->N_bodies = N_of_bodies;
 
+		std::string path = "../output/rand_bodies.txt";
+		this->traj_init = read_data<T>(path);
 
 		auto func = [G, eps](const std::vector<Body<T>>& traj,
 							 std::vector<Body<T>>& diff_traj, std::size_t begin,

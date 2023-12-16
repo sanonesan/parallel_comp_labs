@@ -18,27 +18,27 @@
 #include "./struct_ode_system.hpp"
 
 
-inline double rand_double(double a, double b) {
-	return (b - a) * rand() / RAND_MAX + a;
-}
-
-template <typename T>
-std::vector<Body<T>> generate_data(std::size_t N) {
-	std::vector<Body<T>> res;
-	res.reserve(N);
-
-	Body<T> body{};
-	for (std::size_t i = 0; i < N; ++i) {
-		body.m = rand_double(1e6, 1e8);
-		for (std::size_t j = 0; j < 3; ++j) {
-			body.r[j] = rand_double(-1e2, 1e2);
-			body.v[j] = rand_double(-1e1, 1e1);
-		}
-
-		res.push_back(body);
-	}
-	return res;
-}
+// inline double rand_double(double a, double b) {
+// 	return (b - a) * rand() / RAND_MAX + a;
+// }
+//
+// template <typename T>
+// std::vector<Body<T>> generate_data(std::size_t N) {
+// 	std::vector<Body<T>> res;
+// 	res.reserve(N);
+//
+// 	Body<T> body{};
+// 	for (std::size_t i = 0; i < N; ++i) {
+// 		body.m = rand_double(1e6, 1e8);
+// 		for (std::size_t j = 0; j < 3; ++j) {
+// 			body.r[j] = rand_double(-1e2, 1e2);
+// 			body.v[j] = rand_double(-1e1, 1e1);
+// 		}
+//
+// 		res.push_back(body);
+// 	}
+// 	return res;
+// }
 
 template <typename T>
 class Solver_N_body {
@@ -130,38 +130,61 @@ class Solver_N_body {
 		}
 
 
-		MPI_Datatype tmp;
-		const int count = 1;
-		MPI_Aint offsets_type[count] = {offsetof(Body<T>, r)};
-		int len[count] = {3};
-		MPI_Datatype types[count] = {MPI_DOUBLE};
-		MPI_Type_create_struct(count, len, offsets_type, types, &tmp);
-		MPI_Type_commit(&tmp);
+		// MPI_Datatype tmp;
+		// const int count = 1;
+		// MPI_Aint offsets_type[count] = {offsetof(Body<T>, r)};
+		// int len[count] = {3};
+		// MPI_Datatype types[count] = {MPI_DOUBLE};
+		// MPI_Type_create_struct(count, len, offsets_type, types, &tmp);
+		// MPI_Type_commit(&tmp);
 
-		MPI_Datatype MPI_BODY_R;
-		MPI_Type_create_resized(tmp, offsetof(Body<T>, r), sizeof(Body<T>),
-								&MPI_BODY_R);
-		MPI_Type_commit(&MPI_BODY_R);
+		MPI_Datatype MPI_BODYR;
+		{
+			MPI_Datatype MPI_BODYRtmp;
+			const int count = 1;
+			int len[count] = {3};
+			MPI_Aint dis[count] = {offsetof(Body<T>, r)};
+			MPI_Datatype typ[count] = {MPI_DOUBLE};
+			MPI_Type_create_struct(count, len, dis, typ, &MPI_BODYRtmp);
+			MPI_Type_commit(&MPI_BODYRtmp);
+			{
+				MPI_Aint lb;
+				MPI_Aint extent;
+				MPI_Type_get_extent(MPI_BODYRtmp, &lb, &extent);
+				// if (id == 0)
+				// 	std::cout << "MPI_BODYRtmp: lb = " << lb
+				// 			  << ", extent = " << extent << std::endl;
+			}
+
+			MPI_Type_create_resized(MPI_BODYRtmp, 0, sizeof(Body<T>),
+									&MPI_BODYR);
+			MPI_Type_commit(&MPI_BODYR);
+			{
+				MPI_Aint lb;
+				MPI_Aint extent;
+				MPI_Type_get_extent(MPI_BODYR, &lb, &extent);
+				// if (id == 0)
+				// 	std::cout << "MPI_BODYR: lb = " << lb
+				// 			  << ", extent = " << extent << std::endl;
+			}
+		}
+		// MPI_Datatype MPI_BODY_R;
+		// MPI_Type_create_resized(tmp, offsetof(Body<T>, r), sizeof(Body<T>),
+		// 						&MPI_BODY_R);
+		// MPI_Type_commit(&MPI_BODY_R);
 
 		if (sys.name == "4Body_test") {
 			std::string test_path =
 				"../output/results_" + std::to_string(sys.tau) + ".csv";
-			ode_RK2_MPI(sys, iter, timer, MPI_BODY_R, recv_count, offsets, id,
+			ode_RK2_MPI(sys, iter, timer, MPI_BODYR, recv_count, offsets, id,
 						test_path);
 		}
 		if (sys.name == "4Body_random") {
-			if (id == 0) {
-				sys.traj_init = generate_data<T>(sys.N_bodies);
-			}
-			MPI_Bcast(sys.traj_init.data(), sys.N_bodies * (1 + 3 + 3),
-					  MPI_DOUBLE, 0, MPI_COMM_WORLD);
-
-			ode_RK2_MPI(sys, iter, timer, MPI_BODY_R, recv_count, offsets, id,
-						"");
+			ode_RK2_MPI(sys, iter, timer, MPI_BODYR, recv_count, offsets, id);
 		}
 
-		MPI_Type_free(&tmp);
-		MPI_Type_free(&MPI_BODY_R);
+		// MPI_Type_free(&tmp);
+		MPI_Type_free(&MPI_BODYR);
 		MPI_Barrier(MPI_COMM_WORLD);
 		if (id == 0) {
 			output_file << size << ";" << sys.t_start << ";" << sys.t_final
