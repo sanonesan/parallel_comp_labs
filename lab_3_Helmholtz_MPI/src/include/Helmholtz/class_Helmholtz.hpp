@@ -1,12 +1,13 @@
 #pragma once
 
+#include <mpi.h>
+
 #include <cmath>
 #include <cstddef>
 #include <functional>
 #include <string>
 #include <utility>
 #include <vector>
-
 
 template <class T>
 class Helmholtz_equation {
@@ -27,6 +28,7 @@ class Helmholtz_equation {
 	T _k = 1000.0;
 	T _coef = 4. + _h * _h * _k * _k;
 
+	T time = 0.;
 
 	// Dirichlete = 0 / Neuman = 1 boundary conditions pair = {condition type,
 	// condition function}

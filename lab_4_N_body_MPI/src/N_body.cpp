@@ -66,21 +66,21 @@ int main(int argc, char** argv) {
 
 	MPI_Init(&argc, &argv);
 
-	MPI_Barrier(MPI_COMM_WORLD);
-	sys.ode_system_default_test(0.1);
-	solver.solve_parallel_MPI(sys);
-
-	MPI_Barrier(MPI_COMM_WORLD);
-	sys.ode_system_default_test(0.05);
-	solver.solve_parallel_MPI(sys);
-
-	MPI_Barrier(MPI_COMM_WORLD);
-	sys.ode_system_default_test(0.025);
-	solver.solve_parallel_MPI(sys);
-
 	// MPI_Barrier(MPI_COMM_WORLD);
-	// sys.ode_system_random_data();
-	// solver.solve_parallel_MPI(sys, "Server");
+	// sys.ode_system_default_test(0.1);
+	// solver.solve_parallel_MPI(sys);
+	//
+	// MPI_Barrier(MPI_COMM_WORLD);
+	// sys.ode_system_default_test(0.05);
+	// solver.solve_parallel_MPI(sys);
+	//
+	// MPI_Barrier(MPI_COMM_WORLD);
+	// sys.ode_system_default_test(0.025);
+	// solver.solve_parallel_MPI(sys);
+
+	MPI_Barrier(MPI_COMM_WORLD);
+	sys.ode_system_random_data();
+	solver.solve_parallel_MPI(sys, "Server");
 
 	MPI_Finalize();
 	return 0;

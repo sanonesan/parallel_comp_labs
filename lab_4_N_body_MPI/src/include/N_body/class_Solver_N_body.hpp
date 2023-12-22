@@ -138,6 +138,15 @@ class Solver_N_body {
 		// MPI_Type_create_struct(count, len, offsets_type, types, &tmp);
 		// MPI_Type_commit(&tmp);
 
+		MPI_Datatype MPI_BODY;
+		const int count1 = 3;
+		MPI_Aint dis[count1] = {offsetof(Body<T>, m), offsetof(Body<T>, r),
+								offsetof(Body<T>, v)};
+		int len1[count1] = {1, 3, 3};
+		MPI_Datatype type1[count1] = {MPI_DOUBLE, MPI_DOUBLE, MPI_DOUBLE};
+		MPI_Type_create_struct(count1, len1, dis, type1, &MPI_BODY);
+		MPI_Type_commit(&MPI_BODY);
+
 		MPI_Datatype MPI_BODYR;
 		{
 			MPI_Datatype MPI_BODYRtmp;
@@ -180,7 +189,7 @@ class Solver_N_body {
 						test_path);
 		}
 		if (sys.name == "4Body_random") {
-			ode_RK2_MPI(sys, iter, timer, MPI_BODYR, recv_count, offsets, id);
+			ode_RK2_MPI(sys, iter, timer, MPI_BODY, recv_count, offsets, id);
 		}
 
 		// MPI_Type_free(&tmp);

@@ -43,6 +43,7 @@ void Seidel_RB_MPI_Send_Recv(int id, int num_procs, Helmholtz_equation<T>& eq,
 	/**
 	 * Main body of Seidel_RB method
 	 */
+	eq.time = -MPI_Wtime();
 	do {
 		local_solution.swap(local_solution_prev);
 
@@ -154,10 +155,10 @@ void Seidel_RB_MPI_Send_Recv(int id, int num_procs, Helmholtz_equation<T>& eq,
 			norm_difference(local_solution_prev, local_solution, reg_local_size,
 							n2, config_Helmholtz_eq::NORM_TYPE, eps);
 
-		MPI_Allreduce(&local_err, &err, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+		MPI_Allreduce(&local_err, &err, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 		++iter;
-	} while (err > eps);
-
+	} while (sqrt(err) > eps);
+	eq.time += MPI_Wtime();
 
 	for (std::size_t i = 0; i < num_procs; ++i) {
 		reg_sizes[i] *= n2;
@@ -200,6 +201,7 @@ void Seidel_RB_MPI_Sendrecv(int id, int num_procs, Helmholtz_equation<T>& eq,
 	/**
 	 * Main body of Seidel_RB method
 	 */
+	eq.time = -MPI_Wtime();
 	do {
 		local_solution.swap(local_solution_prev);
 
@@ -306,10 +308,11 @@ void Seidel_RB_MPI_Sendrecv(int id, int num_procs, Helmholtz_equation<T>& eq,
 			norm_difference(local_solution_prev, local_solution, reg_local_size,
 							n2, config_Helmholtz_eq::NORM_TYPE, eps);
 
-		MPI_Allreduce(&local_err, &err, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+		MPI_Allreduce(&local_err, &err, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 		++iter;
-	} while (err > eps);
+	} while (sqrt(err) > eps);
 
+	eq.time += MPI_Wtime();
 
 	for (std::size_t i = 0; i < num_procs; ++i) {
 		reg_sizes[i] *= n2;
@@ -386,6 +389,7 @@ void Seidel_RB_MPI_ISend_IRecv(int id, int num_procs, Helmholtz_equation<T>& eq,
 	/**
 	 * Main body of Seidel_RB method
 	 */
+	eq.time = -MPI_Wtime();
 	do {
 		local_solution.swap(local_solution_prev);
 
@@ -505,10 +509,11 @@ void Seidel_RB_MPI_ISend_IRecv(int id, int num_procs, Helmholtz_equation<T>& eq,
 			norm_difference(local_solution_prev, local_solution, reg_local_size,
 							n2, config_Helmholtz_eq::NORM_TYPE, eps);
 
-		MPI_Allreduce(&local_err, &err, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+		MPI_Allreduce(&local_err, &err, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 		++iter;
-	} while (err > eps);
+	} while (sqrt(err) > eps);
 
+	eq.time += MPI_Wtime();
 
 	for (std::size_t i = 0; i < num_procs; ++i) {
 		reg_sizes[i] *= n2;
@@ -731,9 +736,9 @@ void Seidel_RB_MPI_ISend_IRecv_Waitany(int id, int num_procs,
 			norm_difference(local_solution_prev, local_solution, reg_local_size,
 							n2, config_Helmholtz_eq::NORM_TYPE, eps);
 
-		MPI_Allreduce(&local_err, &err, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+		MPI_Allreduce(&local_err, &err, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 		++iter;
-	} while (err > eps);
+	} while (sqrt(err) > eps);
 
 
 	for (std::size_t i = 0; i < num_procs; ++i) {

@@ -1,0 +1,2 @@
+size;t_start;t_finish;tau;time_steps;num_procs;time_taken;avg_time_for_step
+10000;0;1;0.1;10;16;0.629873;0.0629873

@@ -26,7 +26,7 @@ T norm_difference(const std::vector<T>& A, const std::vector<T>& B,
 			tmp = A[i] - B[i];
 			norm += tmp * tmp;
 		}
-		norm = sqrt(norm);
+		// norm = sqrt(norm);
 	}
 	if (fabs(norm) < eps && norm != 0.) {
 		norm = 0.;

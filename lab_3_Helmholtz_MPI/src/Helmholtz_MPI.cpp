@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
 					<< solver.iter << ";"
 					<< norm_difference(eq._solution_vec, eq.res, eq.x1.size(),
 									   eq.x2.size())
-					<< ";" << t1 << "\n";
+					<< ";" << eq.time << "\n";
 	}
 
 	method_type = "Jacobi";
@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
 					<< solver.iter << ";"
 					<< norm_difference(eq._solution_vec, eq.res, eq.x1.size(),
 									   eq.x2.size())
-					<< ";" << t1 << "\n";
+					<< ";" << eq.time << "\n";
 	}
 
 	method_type = "Jacobi";
@@ -113,7 +113,7 @@ int main(int argc, char** argv) {
 					<< solver.iter << ";"
 					<< norm_difference(eq._solution_vec, eq.res, eq.x1.size(),
 									   eq.x2.size())
-					<< ";" << t1 << "\n";
+					<< ";" << eq.time << "\n";
 	}
 
 	method_type = "Seidel_RB";
@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
 					<< solver.iter << ";"
 					<< norm_difference(eq._solution_vec, eq.res, eq.x1.size(),
 									   eq.x2.size())
-					<< ";" << t1 << "\n";
+					<< ";" << eq.time << "\n";
 	}
 
 	method_type = "Seidel_RB";
@@ -145,7 +145,7 @@ int main(int argc, char** argv) {
 					<< solver.iter << ";"
 					<< norm_difference(eq._solution_vec, eq.res, eq.x1.size(),
 									   eq.x2.size())
-					<< ";" << t1 << "\n";
+					<< ";" << eq.time << "\n";
 	}
 
 	method_type = "Seidel_RB";
@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
 					<< solver.iter << ";"
 					<< norm_difference(eq._solution_vec, eq.res, eq.x1.size(),
 									   eq.x2.size())
-					<< ";" << t1 << "\n";
+					<< ";" << eq.time << "\n";
 	}
 	method_type = "Seidel_RB";
 	communication_type = "ISend_IRecv_Waitany";
@@ -176,13 +176,13 @@ int main(int argc, char** argv) {
 					<< solver.iter << ";"
 					<< norm_difference(eq._solution_vec, eq.res, eq.x1.size(),
 									   eq.x2.size())
-					<< ";" << t1 << "\n";
+					<< ";" << eq.time << "\n";
 		std::cout << eq._h << ";" << solver.tol << ";" << communication_type
 				  << ";" << num_procs << ";" << method_type << ";"
 				  << solver.iter << ";"
 				  << norm_difference(eq._solution_vec, eq.res, eq.x1.size(),
 									 eq.x2.size())
-				  << ";" << t1 << "\n";
+				  << ";" << eq.time << "\n";
 	}
 
 	MPI_Finalize();

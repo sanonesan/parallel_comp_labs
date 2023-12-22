@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "../../config.hpp"
 #include "./struct_Body.hpp"
 #include "./utils/array_utils.hpp"
 #include "./utils/read_write_utils.hpp"
@@ -97,7 +98,8 @@ struct ode_system {
 		this->n_time_steps = (int)((t_final - t_start) / tau);
 		this->N_bodies = N_of_bodies;
 
-		std::string path = "../output/rand_bodies.txt";
+		std::string path =
+			config_lab_4_MPI::PATH_output_folder + "/rand_bodies.txt";
 		this->traj_init = read_data<T>(path);
 
 		auto func = [G, eps](const std::vector<Body<T>>& traj,

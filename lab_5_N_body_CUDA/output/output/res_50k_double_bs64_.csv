@@ -1,0 +1,2 @@
+type;n_bodies;n_steps;block_size:time_taken;avg_exec_time
+double;50000;20;64;1.03179;0.0515897
