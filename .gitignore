@@ -11,6 +11,16 @@
 /lab_2_Helmholtz_OMP/src/Helmholtz_001
 /lab_2_Helmholtz_OMP/src/Helmholtz_0005 
 /lab_2_Helmholtz_OMP/src/Helmholtz_0001 
+
+/lab_3_Helmholts_MPI/src/config.hpp
+/lab_3_Helmholts_MPI/Helmholtz_MPI_batch
+
+/lab_4_N_body_MPI/src/config.hpp
+/lab_4_N_body_MPI/N_body_MPI_batch
+
+/lab_5_N_body_CUDA/src/config.h
+/lab_5_N_body_CUDA/N_body_CUDA_batch
+
 # Prerequisites
 *.d
 # Compiled Object files
