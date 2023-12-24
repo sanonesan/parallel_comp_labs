@@ -1,8 +1,0 @@
-#!/bin/bash
-#SBATCH --job-name=Egorov_Alexandr 
-#SBATCH --nodes=1
-#SBATCH --cpus-per-task=1
-#SBATCH --partition=release
-#SBATCH --time=0:15:00
-
-mpirun -np 1 /nethome/student/FS20/FS2-x2/Egorov/lab_3_Helmholtz_MPI/src/Helmholtz_MPI_server
