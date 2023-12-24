@@ -1,8 +1,0 @@
-#!/bin/bash
-#SBATCH --job-name=Egorov_Alexandr 
-#SBATCH --nodes=1
-#SBATCH --cpus-per-task=8
-#SBATCH --partition=release
-#SBATCH --time=0:15:00
-
-mpirun -np 8 /nethome/student/FS20/FS2-x2/Egorov/lab_4_N_body_MPI/src/N_body_server
